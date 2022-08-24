@@ -52,6 +52,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             return
 
         (temp, humi) = UNPACK(data[1:4])
+        self.set_device_type(service_info.name.split(" ")[0])
         self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temp / 10)
         self.update_predefined_sensor(SensorLibrary.HUMIDITY__PERCENTAGE, humi)
         self.set_title(f"{service_info.name} {short_address(service_info.address)}")
