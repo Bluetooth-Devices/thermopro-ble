@@ -15,7 +15,7 @@ from sensor_state_data import (
 
 from .parser import ThermoProBluetoothDeviceData
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 __all__ = [
     "ThermoProBluetoothDeviceData",
