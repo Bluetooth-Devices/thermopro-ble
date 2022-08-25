@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.1 (2022-08-25)
+### Fix
+* Use bluetooth_data_tools for short_address ([#4](https://github.com/Bluetooth-Devices/thermopro-ble/issues/4)) ([`dfe24bb`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/dfe24bb7291c0ebd6ad606d9b0c30e126aea4650))
+
 ## v0.4.0 (2022-08-24)
 ### Feature
 * First release ([#3](https://github.com/Bluetooth-Devices/thermopro-ble/issues/3)) ([`aec5185`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/aec518597fdeecdd10368da386bf488a8c1197c6))
