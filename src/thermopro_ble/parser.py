@@ -10,22 +10,15 @@ from __future__ import annotations
 import logging
 from struct import Struct
 
+from bluetooth_data_tools import short_address
 from bluetooth_sensor_state_data import BluetoothData
 from home_assistant_bluetooth import BluetoothServiceInfo
 from sensor_state_data import SensorLibrary
-
-# from bluetooth_data_tools import short_address
 
 _LOGGER = logging.getLogger(__name__)
 
 
 UNPACK = Struct("<hB").unpack
-
-
-def short_address(address: str) -> str:
-    """Convert a Bluetooth address to a short address."""
-    split_address = address.replace("-", ":").split(":")
-    return f"{split_address[-2].upper()}{split_address[-1].upper()}"[-4:]
 
 
 class ThermoProBluetoothDeviceData(BluetoothData):
