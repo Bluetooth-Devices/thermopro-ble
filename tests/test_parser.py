@@ -35,6 +35,16 @@ TP357_ADD = BluetoothServiceInfo(
     source="local",
 )
 
+TP393 = BluetoothServiceInfo(
+    name="TP393 (9376)",
+    manufacturer_data={62146: b"\x005\x02,"},
+    service_uuids=[],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-60,
+    service_data={},
+    source="local",
+)
+
 
 def test_supported_set_the_title():
     parser = ThermoProBluetoothDeviceData()
@@ -139,6 +149,58 @@ def test_tp357_add():
                 device_key=DeviceKey(key="humidity", device_id=None),
                 name="Humidity",
                 native_value=16,
+            ),
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+    )
+
+
+def test_tp393():
+    parser = ThermoProBluetoothDeviceData()
+    assert parser.update(TP393) == SensorUpdate(
+        title="TP393 (9376) EEFF",
+        devices={
+            None: SensorDeviceInfo(
+                name="TP393 (9376)",
+                model="TP393",
+                manufacturer="ThermoPro",
+                sw_version=None,
+                hw_version=None,
+            )
+        },
+        entity_descriptions={
+            DeviceKey(key="temperature", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+            ),
+            DeviceKey(key="humidity", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="humidity", device_id=None),
+                device_class=SensorDeviceClass.HUMIDITY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+        },
+        entity_values={
+            DeviceKey(key="temperature", device_id=None): SensorValue(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                name="Temperature",
+                native_value=24.2,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorValue(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                name="Signal " "Strength",
+                native_value=-60,
+            ),
+            DeviceKey(key="humidity", device_id=None): SensorValue(
+                device_key=DeviceKey(key="humidity", device_id=None),
+                name="Humidity",
+                native_value=53,
             ),
         },
         binary_entity_descriptions={},
