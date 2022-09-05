@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.3 (2022-09-05)
+### Fix
+* Devices not being detected with bluez ([#6](https://github.com/Bluetooth-Devices/thermopro-ble/issues/6)) ([`ba7c6c6`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/ba7c6c66f977fcc589ddfa264b5122f563f021c1))
+
 ## v0.4.2 (2022-09-05)
 ### Fix
 * Turn on rounding ([#5](https://github.com/Bluetooth-Devices/thermopro-ble/issues/5)) ([`6a74075`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/6a740754d5128c6cf8ead4d214ecafd3ec03de5e))
