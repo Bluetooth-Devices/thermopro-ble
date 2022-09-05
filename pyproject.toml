@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "thermopro-ble"
-version = "0.4.1"
+version = "0.4.2"
 description = "Thermopro BLE Sensors"
 authors = ["J. Nick Koston <nick@koston.org>"]
 license = "MIT"

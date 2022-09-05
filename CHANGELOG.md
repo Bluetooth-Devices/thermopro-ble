@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.2 (2022-09-05)
+### Fix
+* Turn on rounding ([#5](https://github.com/Bluetooth-Devices/thermopro-ble/issues/5)) ([`6a74075`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/6a740754d5128c6cf8ead4d214ecafd3ec03de5e))
+
 ## v0.4.1 (2022-08-25)
 ### Fix
 * Use bluetooth_data_tools for short_address ([#4](https://github.com/Bluetooth-Devices/thermopro-ble/issues/4)) ([`dfe24bb`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/dfe24bb7291c0ebd6ad606d9b0c30e126aea4650))
