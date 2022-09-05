@@ -46,6 +46,61 @@ TP393 = BluetoothServiceInfo(
 )
 
 
+TP393_DETECT_CHANGED_1 = BluetoothServiceInfo(
+    name="TP393 (9376)",
+    manufacturer_data={
+        194: b"\x00\x00\x00,",
+        62146: b"\x00(\x02,",
+        61890: b"\x00(\x02,",
+        61634: b"\x00(\x02,",
+        61378: b"\x00(\x02,",
+        61122: b"\x00(\x02,",
+        60866: b"\x00(\x02,",
+        60610: b"\x00(\x02,",
+        60354: b"\x00)\x02,",
+        60098: b"\x00)\x02,",
+        59842: b"\x00)\x02,",
+        59586: b"\x00)\x02,",
+        59330: b"\x00*\x02,",
+        59074: b"\x00*\x02,",
+        58818: b"\x00*\x02,",
+        58562: b"\x00*\x02,",
+    },
+    service_uuids=[],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-60,
+    service_data={},
+    source="local",
+)
+
+TP393_DETECT_CHANGED_2 = BluetoothServiceInfo(
+    name="TP393 (9376)",
+    manufacturer_data={
+        194: b"\x00\x00\x00,",
+        62146: b"\x00(\x02,",
+        61890: b"\x00(\x02,",
+        61634: b"\x00(\x02,",
+        61378: b"\x00(\x02,",
+        61122: b"\x00(\x02,",
+        60866: b"\x00(\x02,",
+        60610: b"\x00(\x02,",
+        60354: b"\x00)\x02,",
+        60098: b"\x00)\x02,",
+        59842: b"\x00)\x02,",
+        59586: b"\x00)\x02,",
+        59330: b"\x00*\x02,",
+        59074: b"\x00*\x02,",
+        58818: b"\x00*\x02,",
+        58562: b"\x00*\x02,",
+    },
+    service_uuids=[],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-60,
+    service_data={},
+    source="local",
+)
+
+
 def test_supported_set_the_title():
     parser = ThermoProBluetoothDeviceData()
     parser.supported(TP357) is True
@@ -202,6 +257,41 @@ def test_tp393():
                 name="Humidity",
                 native_value=53,
             ),
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+    )
+
+
+def test_tp393_multi_updates():
+    parser = ThermoProBluetoothDeviceData()
+    assert parser.supported(TP393_DETECT_CHANGED_1) is True
+    parser.update(TP393_DETECT_CHANGED_1)
+    result = parser.update(TP393_DETECT_CHANGED_2)
+    assert result == SensorUpdate(
+        title="TP393 (9376) EEFF",
+        devices={
+            None: SensorDeviceInfo(
+                name="TP393 (9376)",
+                model="TP393",
+                manufacturer="ThermoPro",
+                sw_version=None,
+                hw_version=None,
+            )
+        },
+        entity_descriptions={
+            DeviceKey(key="signal_strength", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+            )
+        },
+        entity_values={
+            DeviceKey(key="signal_strength", device_id=None): SensorValue(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                name="Signal " "Strength",
+                native_value=-60,
+            )
         },
         binary_entity_descriptions={},
         binary_entity_values={},

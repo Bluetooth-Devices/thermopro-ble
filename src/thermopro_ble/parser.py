@@ -29,7 +29,15 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         _LOGGER.debug("Parsing thermopro BLE advertisement data: %s", service_info)
         if not service_info.name.startswith(("TP35", "TP39")):
             return
-
+        if not service_info.manufacturer_data:
+            return
+        if len(list(service_info.manufacturer_data.values())[0]) != 4:
+            return
+        self.set_device_type(service_info.name.split(" ")[0])
+        self.set_title(f"{service_info.name} {short_address(service_info.address)}")
+        self.set_device_name(service_info.name)
+        self.set_precision(2)
+        self.set_device_manufacturer("ThermoPro")
         changed_manufacturer_data = self.changed_manufacturer_data(service_info)
 
         if not changed_manufacturer_data:
@@ -45,10 +53,5 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             return
 
         (temp, humi) = UNPACK(data[1:4])
-        self.set_precision(2)
-        self.set_device_type(service_info.name.split(" ")[0])
         self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temp / 10)
         self.update_predefined_sensor(SensorLibrary.HUMIDITY__PERCENTAGE, humi)
-        self.set_title(f"{service_info.name} {short_address(service_info.address)}")
-        self.set_device_name(service_info.name)
-        self.set_device_manufacturer("ThermoPro")
