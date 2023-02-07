@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.5 (2023-02-07)
+### Fix
+* Account for switching adapter when finding changed_manufacturer_data ([#8](https://github.com/Bluetooth-Devices/thermopro-ble/issues/8)) ([`18a949b`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/18a949bbccc3efdaf584440ad092baec4b938f9f))
+
 ## v0.4.4 (2023-02-07)
 ### Fix
 * Update isort to fix CI ([#7](https://github.com/Bluetooth-Devices/thermopro-ble/issues/7)) ([`417772d`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/417772db2d6f79e7fe5cc9dfa52d3d4b394282da))
