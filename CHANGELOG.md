@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.4 (2023-02-07)
+### Fix
+* Update isort to fix CI ([#7](https://github.com/Bluetooth-Devices/thermopro-ble/issues/7)) ([`417772d`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/417772db2d6f79e7fe5cc9dfa52d3d4b394282da))
+
 ## v0.4.3 (2022-09-05)
 ### Fix
 * Devices not being detected with bluez ([#6](https://github.com/Bluetooth-Devices/thermopro-ble/issues/6)) ([`ba7c6c6`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/ba7c6c66f977fcc589ddfa264b5122f563f021c1))
