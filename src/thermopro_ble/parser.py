@@ -31,7 +31,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             return
         if not service_info.manufacturer_data:
             return
-        if len(list(service_info.manufacturer_data.values())[0]) != 4:
+        if len(list(service_info.manufacturer_data.values())[0]) < 4:
             return
         self.set_device_type(service_info.name.split(" ")[0])
         self.set_title(f"{service_info.name} {short_address(service_info.address)}")
@@ -52,7 +52,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             + changed_manufacturer_data[last_id]
         )
 
-        if len(data) != 6:
+        if len(data) < 6:
             return
 
         (temp, humi) = UNPACK(data[1:4])
