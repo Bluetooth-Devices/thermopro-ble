@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.0 (2023-12-06)
+
+### Feature
+
+* Add support for TP357S ([#13](https://github.com/Bluetooth-Devices/thermopro-ble/issues/13)) ([`78b0a05`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/78b0a056b7f8b2334b6b27274c6c1559c3388b24))
+
+### Fix
+
+* Trigger release ([#16](https://github.com/Bluetooth-Devices/thermopro-ble/issues/16)) ([`f791dee`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/f791dee2e8839b2b39f776ec4abbc3d8bafee71c))
+
 ## v0.4.5 (2023-02-07)
 ### Fix
 * Account for switching adapter when finding changed_manufacturer_data ([#8](https://github.com/Bluetooth-Devices/thermopro-ble/issues/8)) ([`18a949b`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/18a949bbccc3efdaf584440ad092baec4b938f9f))
