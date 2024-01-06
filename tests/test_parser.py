@@ -202,6 +202,11 @@ def test_tp357():
                 device_class=SensorDeviceClass.SIGNAL_STRENGTH,
                 native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
             ),
+            DeviceKey(key="battery", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery", device_id=None),
+                device_class=SensorDeviceClass.BATTERY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
         },
         entity_values={
             DeviceKey(key="temperature", device_id=None): SensorValue(
@@ -218,6 +223,11 @@ def test_tp357():
                 device_key=DeviceKey(key="signal_strength", device_id=None),
                 name="Signal " "Strength",
                 native_value=-60,
+            ),
+            DeviceKey(key="battery", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery", device_id=None),
+                name="Battery",
+                native_value=100,
             ),
         },
         binary_entity_descriptions={},
@@ -354,6 +364,11 @@ def test_tp357_add():
                 device_class=SensorDeviceClass.HUMIDITY,
                 native_unit_of_measurement=Units.PERCENTAGE,
             ),
+            DeviceKey(key="battery", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery", device_id=None),
+                device_class=SensorDeviceClass.BATTERY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
         },
         entity_values={
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
@@ -370,6 +385,11 @@ def test_tp357_add():
                 device_key=DeviceKey(key="humidity", device_id=None),
                 name="Humidity",
                 native_value=16,
+            ),
+            DeviceKey(key="battery", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery", device_id=None),
+                name="Battery",
+                native_value=100,
             ),
         },
         binary_entity_descriptions={},
@@ -406,6 +426,11 @@ def test_tp393():
                 device_class=SensorDeviceClass.HUMIDITY,
                 native_unit_of_measurement=Units.PERCENTAGE,
             ),
+            DeviceKey(key="battery", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery", device_id=None),
+                device_class=SensorDeviceClass.BATTERY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
         },
         entity_values={
             DeviceKey(key="temperature", device_id=None): SensorValue(
@@ -422,6 +447,11 @@ def test_tp393():
                 device_key=DeviceKey(key="humidity", device_id=None),
                 name="Humidity",
                 native_value=53,
+            ),
+            DeviceKey(key="battery", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery", device_id=None),
+                name="Battery",
+                native_value=100,
             ),
         },
         binary_entity_descriptions={},
