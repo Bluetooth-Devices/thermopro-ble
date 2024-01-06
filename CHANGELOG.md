@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.0 (2024-01-06)
+
+### Feature
+
+* Add battery support for TP357 and TP393 ([#17](https://github.com/Bluetooth-Devices/thermopro-ble/issues/17)) ([`cbb8be9`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/cbb8be9dfdc9b686ed94ad083d58785eb1805ed1))
+
 ## v0.5.0 (2023-12-06)
 
 ### Feature
