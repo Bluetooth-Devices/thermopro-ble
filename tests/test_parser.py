@@ -166,6 +166,29 @@ TP393_DETECT_CHANGED_2 = BluetoothServiceInfo(
     source="local",
 )
 
+TP960R = BluetoothServiceInfo(
+    name="TP960R (0000)",
+    manufacturer_data={14848: b"\x000\x088\x00"},
+    service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-75,
+    service_data={},
+    source="local",
+)
+TP960R_2 = BluetoothServiceInfo(
+    name="TP960R (0000)",
+    manufacturer_data={
+        14848: b"\x000\x088\x00",
+        14336: b'\x00"\x088\x00',
+        14592: b'\x00"\x089\x00',
+    },
+    service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-75,
+    service_data={},
+    source="local",
+)
+
 
 def test_supported_set_the_title():
     parser = ThermoProBluetoothDeviceData()
@@ -228,6 +251,106 @@ def test_tp357():
                 device_key=DeviceKey(key="battery", device_id=None),
                 name="Battery",
                 native_value=100,
+            ),
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+    )
+
+
+def test_tp960r():
+    parser = ThermoProBluetoothDeviceData()
+    assert parser.update(TP960R) == SensorUpdate(
+        title="TP960R (0000) EEFF",
+        devices={
+            None: SensorDeviceInfo(
+                name="TP960R (0000)",
+                model="TP960R",
+                manufacturer="ThermoPro",
+                sw_version=None,
+                hw_version=None,
+            )
+        },
+        entity_descriptions={
+            DeviceKey(key="temperature", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+            ),
+            DeviceKey(key="battery", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery", device_id=None),
+                device_class=SensorDeviceClass.BATTERY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+        },
+        entity_values={
+            DeviceKey(key="temperature", device_id=None): SensorValue(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                name="Temperature",
+                native_value=24.1,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorValue(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                name="Signal " "Strength",
+                native_value=-75,
+            ),
+            DeviceKey(key="battery", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery", device_id=None),
+                name="Battery",
+                native_value=1,
+            ),
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+    )
+    assert parser.update(TP960R_2) == SensorUpdate(
+        title="TP960R (0000) EEFF",
+        devices={
+            None: SensorDeviceInfo(
+                name="TP960R (0000)",
+                model="TP960R",
+                manufacturer="ThermoPro",
+                sw_version=None,
+                hw_version=None,
+            )
+        },
+        entity_descriptions={
+            DeviceKey(key="temperature", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+            ),
+            DeviceKey(key="battery", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery", device_id=None),
+                device_class=SensorDeviceClass.BATTERY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+        },
+        entity_values={
+            DeviceKey(key="temperature", device_id=None): SensorValue(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                name="Temperature",
+                native_value=24.1,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorValue(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                name="Signal " "Strength",
+                native_value=-75,
+            ),
+            DeviceKey(key="battery", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery", device_id=None),
+                name="Battery",
+                native_value=1,
             ),
         },
         binary_entity_descriptions={},

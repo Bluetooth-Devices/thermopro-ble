@@ -24,7 +24,8 @@ BATTERY_VALUE_TO_LEVEL = {
     2: 100,
 }
 
-UNPACK = Struct("<hB").unpack
+UNPACK_TEMP_HUMID = Struct("<hB").unpack
+UNPACK_SPIKE_TEMP = Struct("<h").unpack
 
 
 class ThermoProBluetoothDeviceData(BluetoothData):
@@ -33,15 +34,16 @@ class ThermoProBluetoothDeviceData(BluetoothData):
     def _start_update(self, service_info: BluetoothServiceInfo) -> None:
         """Update from BLE advertisement data."""
         _LOGGER.debug("Parsing thermopro BLE advertisement data: %s", service_info)
-        if not service_info.name.startswith(("TP35", "TP39")):
+        name = service_info.name
+        if not name.startswith(("TP35", "TP39", "TP96")):
             return
         if not service_info.manufacturer_data:
             return
         if len(list(service_info.manufacturer_data.values())[0]) < 4:
             return
-        self.set_device_type(service_info.name.split(" ")[0])
-        self.set_title(f"{service_info.name} {short_address(service_info.address)}")
-        self.set_device_name(service_info.name)
+        self.set_device_type(name.split(" ")[0])
+        self.set_title(f"{name} {short_address(service_info.address)}")
+        self.set_device_name(name)
         self.set_precision(2)
         self.set_device_manufacturer("ThermoPro")
         changed_manufacturer_data = self.changed_manufacturer_data(service_info)
@@ -61,8 +63,6 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         if len(data) < 6:
             return
 
-        (temp, humi) = UNPACK(data[1:4])
-
         # TP357S seems to be in 6, TP397 and TP393 in 4
         battery_byte = data[6] if len(data) == 7 else data[4]
         if battery_byte in BATTERY_VALUE_TO_LEVEL:
@@ -70,5 +70,14 @@ class ThermoProBluetoothDeviceData(BluetoothData):
                 SensorLibrary.BATTERY__PERCENTAGE,
                 BATTERY_VALUE_TO_LEVEL[battery_byte],
             )
+
+        if name.startswith("TP96"):
+            (temp,) = UNPACK_SPIKE_TEMP(data[1:3])
+            # TP96 has a different format
+            # It has an internal temp probe and an ambient temp probe
+            self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temp / 10)
+            return
+
+        (temp, humi) = UNPACK_TEMP_HUMID(data[1:4])
         self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temp / 10)
         self.update_predefined_sensor(SensorLibrary.HUMIDITY__PERCENTAGE, humi)
