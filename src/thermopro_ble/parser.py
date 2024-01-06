@@ -63,8 +63,8 @@ class ThermoProBluetoothDeviceData(BluetoothData):
 
         (temp, humi) = UNPACK(data[1:4])
 
-        # TP357S seems to be in 5, TP397 and TP393 in 4
-        battery_byte = data[5] if len(data) == 7 else data[4]
+        # TP357S seems to be in 6, TP397 and TP393 in 4
+        battery_byte = data[6] if len(data) == 7 else data[4]
         if battery_byte in BATTERY_VALUE_TO_LEVEL:
             self.update_predefined_sensor(
                 SensorLibrary.BATTERY__PERCENTAGE,
