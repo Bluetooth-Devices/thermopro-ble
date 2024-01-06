@@ -18,6 +18,12 @@ from sensor_state_data import SensorLibrary
 _LOGGER = logging.getLogger(__name__)
 
 
+BATTERY_VALUE_TO_LEVEL = {
+    0: 1,
+    1: 50,
+    2: 100,
+}
+
 UNPACK = Struct("<hB").unpack
 
 
@@ -56,5 +62,13 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             return
 
         (temp, humi) = UNPACK(data[1:4])
+
+        # TP357S seems to be in 6, TP397 and TP393 in 4
+        battery_byte = data[6] if len(data) == 7 else data[4]
+        if battery_byte in BATTERY_VALUE_TO_LEVEL:
+            self.update_predefined_sensor(
+                SensorLibrary.BATTERY__PERCENTAGE,
+                BATTERY_VALUE_TO_LEVEL[battery_byte],
+            )
         self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temp / 10)
         self.update_predefined_sensor(SensorLibrary.HUMIDITY__PERCENTAGE, humi)
