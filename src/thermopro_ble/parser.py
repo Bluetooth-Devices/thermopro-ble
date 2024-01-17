@@ -65,26 +65,32 @@ class ThermoProBluetoothDeviceData(BluetoothData):
 
         if name.startswith("TP96"):
             MAX_BAT = 2880
-            MIN_BAT = 1600 # ??
+            MIN_BAT = 1600  # ??
             bat_range = MAX_BAT - MIN_BAT
-            (probe_index, internal_temp, battery, ambient_temp) = UNPACK_SPIKE_TEMP(data)
+            (probe_index, internal_temp, battery, ambient_temp) = UNPACK_SPIKE_TEMP(
+                data
+            )
             internal_temp = internal_temp - 30
             ambient_temp = ambient_temp - 30
             battery_percent = (battery - MIN_BAT) / bat_range
 
             # TP96 has a different format
             # It has an internal temp probe and an ambient temp probe
-            self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS,
+            self.update_predefined_sensor(
+                SensorLibrary.TEMPERATURE__CELSIUS,
                 internal_temp,
                 key="internal_temperature",
                 name="Internal Temperature",
             )
-            self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS,
+            self.update_predefined_sensor(
+                SensorLibrary.TEMPERATURE__CELSIUS,
                 ambient_temp,
                 key="ambient_temperature",
                 name="Ambient Temperature",
             )
-            self.update_predefined_sensor(SensorLibrary.BATTERY__PERCENTAGE, battery_percent)
+            self.update_predefined_sensor(
+                SensorLibrary.BATTERY__PERCENTAGE, battery_percent
+            )
 
             return
 
