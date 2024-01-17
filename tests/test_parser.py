@@ -272,8 +272,13 @@ def test_tp960r():
             )
         },
         entity_descriptions={
-            DeviceKey(key="temperature", device_id=None): SensorDescription(
-                device_key=DeviceKey(key="temperature", device_id=None),
+            DeviceKey(key="internal_temperature", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="internal_temperature", device_id=None),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(key="ambient_temperature", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="ambient_temperature", device_id=None),
                 device_class=SensorDeviceClass.TEMPERATURE,
                 native_unit_of_measurement=Units.TEMP_CELSIUS,
             ),
@@ -289,10 +294,15 @@ def test_tp960r():
             ),
         },
         entity_values={
-            DeviceKey(key="temperature", device_id=None): SensorValue(
-                device_key=DeviceKey(key="temperature", device_id=None),
-                name="Temperature",
-                native_value=24.1,
+            DeviceKey(key="internal_temperature", device_id=None): SensorValue(
+                device_key=DeviceKey(key="internal_temperature", device_id=None),
+                name="Internal Temperature",
+                native_value=28,
+            ),
+            DeviceKey(key="ambient_temperature", device_id=None): SensorValue(
+                device_key=DeviceKey(key="ambient_temperature", device_id=None),
+                name="Ambient Temperature",
+                native_value=26,
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
@@ -302,7 +312,7 @@ def test_tp960r():
             DeviceKey(key="battery", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery", device_id=None),
                 name="Battery",
-                native_value=1,
+                native_value=0.39,
             ),
         },
         binary_entity_descriptions={},
@@ -320,8 +330,13 @@ def test_tp960r():
             )
         },
         entity_descriptions={
-            DeviceKey(key="temperature", device_id=None): SensorDescription(
-                device_key=DeviceKey(key="temperature", device_id=None),
+            DeviceKey(key="internal_temperature", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="internal_temperature", device_id=None),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(key="ambient_temperature", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="ambient_temperature", device_id=None),
                 device_class=SensorDeviceClass.TEMPERATURE,
                 native_unit_of_measurement=Units.TEMP_CELSIUS,
             ),
@@ -337,10 +352,15 @@ def test_tp960r():
             ),
         },
         entity_values={
-            DeviceKey(key="temperature", device_id=None): SensorValue(
-                device_key=DeviceKey(key="temperature", device_id=None),
-                name="Temperature",
-                native_value=24.1,
+            DeviceKey(key="internal_temperature", device_id=None): SensorValue(
+                device_key=DeviceKey(key="internal_temperature", device_id=None),
+                name="Internal Temperature",
+                native_value=28,
+            ),
+            DeviceKey(key="ambient_temperature", device_id=None): SensorValue(
+                device_key=DeviceKey(key="ambient_temperature", device_id=None),
+                name="Ambient Temperature",
+                native_value=26,
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
@@ -350,13 +370,12 @@ def test_tp960r():
             DeviceKey(key="battery", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery", device_id=None),
                 name="Battery",
-                native_value=1,
+                native_value=0.39,
             ),
         },
         binary_entity_descriptions={},
         binary_entity_values={},
     )
-
 
 def test_tp357s():
     parser = ThermoProBluetoothDeviceData()

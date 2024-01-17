@@ -25,7 +25,7 @@ BATTERY_VALUE_TO_LEVEL = {
 }
 
 UNPACK_TEMP_HUMID = Struct("<hB").unpack
-UNPACK_SPIKE_TEMP = Struct("<h").unpack
+UNPACK_SPIKE_TEMP = Struct("<BHHH").unpack
 
 
 class ThermoProBluetoothDeviceData(BluetoothData):
@@ -63,6 +63,32 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         if len(data) < 6:
             return
 
+        if name.startswith("TP96"):
+            MAX_BAT = 2880
+            MIN_BAT = 1600 # ??
+            bat_range = MAX_BAT - MIN_BAT
+            (p_index, m_temp, battery, a_temp) = UNPACK_SPIKE_TEMP(data)
+            m_temp = m_temp - 30
+            a_temp = a_temp - 30
+            battery_percent = (battery - MIN_BAT) / bat_range
+            print(f"========================>>>>>>>>>>>>>>>>>>>>>>>>>> {battery}")
+            # TP96 has a different format
+            # It has an internal temp probe and an ambient temp probe
+            self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS,
+                m_temp,
+                key="internal_temperature",
+                name="Internal Temperature",
+            )
+            self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS,
+                a_temp,
+                key="ambient_temperature",
+                name="Ambient Temperature",
+            )
+            self.update_predefined_sensor(SensorLibrary.BATTERY__PERCENTAGE, battery_percent)
+
+            return
+
+
         # TP357S seems to be in 6, TP397 and TP393 in 4
         battery_byte = data[6] if len(data) == 7 else data[4]
         if battery_byte in BATTERY_VALUE_TO_LEVEL:
@@ -70,13 +96,6 @@ class ThermoProBluetoothDeviceData(BluetoothData):
                 SensorLibrary.BATTERY__PERCENTAGE,
                 BATTERY_VALUE_TO_LEVEL[battery_byte],
             )
-
-        if name.startswith("TP96"):
-            (temp,) = UNPACK_SPIKE_TEMP(data[1:3])
-            # TP96 has a different format
-            # It has an internal temp probe and an ambient temp probe
-            self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temp / 10)
-            return
 
         (temp, humi) = UNPACK_TEMP_HUMID(data[1:4])
         self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temp / 10)
