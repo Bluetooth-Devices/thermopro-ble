@@ -48,7 +48,8 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             return
         if len(list(service_info.manufacturer_data.values())[0]) < 4:
             return
-        self.set_device_type(name.split(" ")[0])
+        model = name.split(" ")[0]
+        self.set_device_type(model)
         self.set_title(f"{name} {short_address(service_info.address)}")
         self.set_device_name(name)
         self.set_precision(2)
@@ -81,14 +82,14 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             ambient_temp = ambient_temp - 30
             battery_percent = (battery - MIN_BAT) / bat_range
 
-            multiprobe_mapping = MULTIPROBE_DEVICES.get(name, {0: ""})
+            multiprobe_mapping = MULTIPROBE_DEVICES.get(model, {0: ""})
             probe_name = multiprobe_mapping.get(probe_index, str(probe_index))
             if probe_name:
                 self.set_title(
                     f"{name} {probe_name.capitalize()} "
                     f"{short_address(service_info.address)}"
                 )
-                self.set_device_name(f"{name}_{probe_name.upper()}")
+                self.set_device_name(f"{name} {probe_name.upper()}")
 
             # TP96 has a different format
             # It has an internal temp probe and an ambient temp probe
