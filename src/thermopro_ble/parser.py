@@ -27,6 +27,13 @@ BATTERY_VALUE_TO_LEVEL = {
 UNPACK_TEMP_HUMID = Struct("<hB").unpack
 UNPACK_SPIKE_TEMP = Struct("<BHHH").unpack
 
+MULTIPROBE_DEVICES = {
+    "TP962R": {
+        0: "black",
+        1: "white",
+    },
+}
+
 
 class ThermoProBluetoothDeviceData(BluetoothData):
     """Date update for ThermoPro Bluetooth devices."""
@@ -74,6 +81,15 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             ambient_temp = ambient_temp - 30
             battery_percent = (battery - MIN_BAT) / bat_range
 
+            multiprobe_mapping = MULTIPROBE_DEVICES.get(name, {0: ""})
+            probe_name = multiprobe_mapping.get(probe_index, str(probe_index))
+            if probe_name:
+                self.set_title(
+                    f"{name} {probe_name.capitalize()} "
+                    f"{short_address(service_info.address)}"
+                )
+                self.set_device_name(f"{name}_{probe_name.upper()}")
+
             # TP96 has a different format
             # It has an internal temp probe and an ambient temp probe
             self.update_predefined_sensor(
@@ -93,7 +109,6 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             )
 
             return
-
 
         # TP357S seems to be in 6, TP397 and TP393 in 4
         battery_byte = data[6] if len(data) == 7 else data[4]
