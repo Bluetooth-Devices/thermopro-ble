@@ -34,6 +34,9 @@ MULTIPROBE_DEVICES = {
     },
 }
 
+TP96_MAX_BAT = 2880
+TP96_MIN_BAT = 1600  # ??
+
 
 class ThermoProBluetoothDeviceData(BluetoothData):
     """Date update for ThermoPro Bluetooth devices."""
@@ -72,15 +75,13 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             return
 
         if name.startswith("TP96"):
-            MAX_BAT = 2880
-            MIN_BAT = 1600  # ??
-            bat_range = MAX_BAT - MIN_BAT
+            bat_range = TP96_MAX_BAT - TP96_MIN_BAT
             (probe_index, internal_temp, battery, ambient_temp) = UNPACK_SPIKE_TEMP(
                 data
             )
             internal_temp = internal_temp - 30
             ambient_temp = ambient_temp - 30
-            battery_percent = (battery - MIN_BAT) / bat_range
+            battery_percent = (battery - TP96_MIN_BAT) / bat_range
 
             multiprobe_mapping = MULTIPROBE_DEVICES.get(model, {0: ""})
             probe_name = multiprobe_mapping.get(probe_index, str(probe_index))
