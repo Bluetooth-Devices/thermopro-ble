@@ -24,7 +24,11 @@ BATTERY_VALUE_TO_LEVEL = {
     2: 100,
 }
 
-UNPACK = Struct("<hB").unpack
+UNPACK_TEMP_HUMID = Struct("<hB").unpack
+UNPACK_SPIKE_TEMP = Struct("<BHHH").unpack
+
+TP96_MAX_BAT = 2880
+TP96_MIN_BAT = 1600  # ??
 
 
 class ThermoProBluetoothDeviceData(BluetoothData):
@@ -33,15 +37,17 @@ class ThermoProBluetoothDeviceData(BluetoothData):
     def _start_update(self, service_info: BluetoothServiceInfo) -> None:
         """Update from BLE advertisement data."""
         _LOGGER.debug("Parsing thermopro BLE advertisement data: %s", service_info)
-        if not service_info.name.startswith(("TP35", "TP39")):
+        name = service_info.name
+        if not name.startswith(("TP35", "TP39", "TP96")):
             return
         if not service_info.manufacturer_data:
             return
         if len(list(service_info.manufacturer_data.values())[0]) < 4:
             return
-        self.set_device_type(service_info.name.split(" ")[0])
-        self.set_title(f"{service_info.name} {short_address(service_info.address)}")
-        self.set_device_name(service_info.name)
+        model = name.split(" ")[0]
+        self.set_device_type(model)
+        self.set_title(f"{name} {short_address(service_info.address)}")
+        self.set_device_name(name)
         self.set_precision(2)
         self.set_device_manufacturer("ThermoPro")
         changed_manufacturer_data = self.changed_manufacturer_data(service_info)
@@ -61,7 +67,41 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         if len(data) < 6:
             return
 
-        (temp, humi) = UNPACK(data[1:4])
+        if name.startswith("TP96"):
+            bat_range = TP96_MAX_BAT - TP96_MIN_BAT
+
+            # TP96 has a different format
+            # It has an internal temp probe and an ambient temp probe
+            (
+                probe_zero_indexed,
+                internal_temp,
+                battery,
+                ambient_temp,
+            ) = UNPACK_SPIKE_TEMP(data)
+            probe_one_indexed = probe_zero_indexed + 1
+            internal_temp = internal_temp - 30
+            ambient_temp = ambient_temp - 30
+            battery_percent = ((battery - TP96_MIN_BAT) / bat_range) * 100
+            self.update_predefined_sensor(
+                SensorLibrary.TEMPERATURE__CELSIUS,
+                internal_temp,
+                key=f"internal_temperature_probe_{probe_one_indexed}",
+                name=f"Probe {probe_one_indexed} Internal Temperature",
+            )
+            self.update_predefined_sensor(
+                SensorLibrary.TEMPERATURE__CELSIUS,
+                ambient_temp,
+                key=f"ambient_temperature_probe_{probe_one_indexed}",
+                name=f"Probe {probe_one_indexed} Ambient Temperature",
+            )
+            self.set_precision(0)
+            self.update_predefined_sensor(
+                SensorLibrary.BATTERY__PERCENTAGE,
+                battery_percent,
+                key=f"battery_probe_{probe_one_indexed}",
+                name=f"Probe {probe_one_indexed} Battery",
+            )
+            return
 
         # TP357S seems to be in 6, TP397 and TP393 in 4
         battery_byte = data[6] if len(data) == 7 else data[4]
@@ -70,5 +110,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
                 SensorLibrary.BATTERY__PERCENTAGE,
                 BATTERY_VALUE_TO_LEVEL[battery_byte],
             )
+
+        (temp, humi) = UNPACK_TEMP_HUMID(data[1:4])
         self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temp / 10)
         self.update_predefined_sensor(SensorLibrary.HUMIDITY__PERCENTAGE, humi)
