@@ -25,7 +25,10 @@ BATTERY_VALUE_TO_LEVEL = {
 }
 
 UNPACK_TEMP_HUMID = Struct("<hB").unpack
-UNPACK_SPIKE_TEMP = Struct("<h").unpack
+UNPACK_SPIKE_TEMP = Struct("<BHHH").unpack
+
+TP96_MAX_BAT = 2880
+TP96_MIN_BAT = 1600  # ??
 
 
 class ThermoProBluetoothDeviceData(BluetoothData):
@@ -41,9 +44,15 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             return
         if len(list(service_info.manufacturer_data.values())[0]) < 4:
             return
-        self.set_device_type(name.split(" ")[0])
-        self.set_title(f"{name} {short_address(service_info.address)}")
-        self.set_device_name(name)
+        model = name.split(" ")[0]
+        self.set_device_type(model)
+        if model.startswith("TP96"):
+            # This series can have multiple probes, so we must assume probe 1
+            self.set_title(f"{name} Probe 1 {short_address(service_info.address)}")
+            self.set_device_name(f"{name} PROBE 1")
+        else:
+            self.set_title(f"{name} {short_address(service_info.address)}")
+            self.set_device_name(name)
         self.set_precision(2)
         self.set_device_manufacturer("ThermoPro")
         changed_manufacturer_data = self.changed_manufacturer_data(service_info)
@@ -63,6 +72,42 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         if len(data) < 6:
             return
 
+        if name.startswith("TP96"):
+            bat_range = TP96_MAX_BAT - TP96_MIN_BAT
+
+            # TP96 has a different format
+            # It has an internal temp probe and an ambient temp probe
+            (probe_index, internal_temp, battery, ambient_temp) = UNPACK_SPIKE_TEMP(
+                data
+            )
+            probe_index += 1
+            internal_temp = internal_temp - 30
+            ambient_temp = ambient_temp - 30
+            battery_percent = (battery - TP96_MIN_BAT) / bat_range
+
+            self.set_title(
+                f"{name} Probe {probe_index} {short_address(service_info.address)}"
+            )
+            self.set_device_name(f"{name} PROBE {probe_index}")
+
+            self.update_predefined_sensor(
+                SensorLibrary.TEMPERATURE__CELSIUS,
+                internal_temp,
+                key="internal_temperature",
+                name="Internal Temperature",
+            )
+            self.update_predefined_sensor(
+                SensorLibrary.TEMPERATURE__CELSIUS,
+                ambient_temp,
+                key="ambient_temperature",
+                name="Ambient Temperature",
+            )
+            self.update_predefined_sensor(
+                SensorLibrary.BATTERY__PERCENTAGE, battery_percent
+            )
+
+            return
+
         # TP357S seems to be in 6, TP397 and TP393 in 4
         battery_byte = data[6] if len(data) == 7 else data[4]
         if battery_byte in BATTERY_VALUE_TO_LEVEL:
@@ -70,13 +115,6 @@ class ThermoProBluetoothDeviceData(BluetoothData):
                 SensorLibrary.BATTERY__PERCENTAGE,
                 BATTERY_VALUE_TO_LEVEL[battery_byte],
             )
-
-        if name.startswith("TP96"):
-            (temp,) = UNPACK_SPIKE_TEMP(data[1:3])
-            # TP96 has a different format
-            # It has an internal temp probe and an ambient temp probe
-            self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temp / 10)
-            return
 
         (temp, humi) = UNPACK_TEMP_HUMID(data[1:4])
         self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temp / 10)
