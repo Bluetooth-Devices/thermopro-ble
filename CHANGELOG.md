@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.0 (2024-01-18)
+
+### Feature
+
+* Add support for temp spike TP96x ([#18](https://github.com/Bluetooth-Devices/thermopro-ble/issues/18)) ([`fd53d14`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/fd53d141640138bcd0d90045e5205e584b5495dc))
+
+### Fix
+
+* Correct version merge ([`256eb2e`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/256eb2ed75e454ad6ecbb547a83b724f254e049c))
+
 ## v0.6.0 (2024-01-06)
 
 ### Feature
