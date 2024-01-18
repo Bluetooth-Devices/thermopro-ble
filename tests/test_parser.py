@@ -312,8 +312,8 @@ def test_tp960r():
                 device_class=SensorDeviceClass.SIGNAL_STRENGTH,
                 native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
             ),
-            DeviceKey(key="battery", device_id=None): SensorDescription(
-                device_key=DeviceKey(key="battery", device_id=None),
+            DeviceKey(key="battery_probe_1", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery_probe_1", device_id=None),
                 device_class=SensorDeviceClass.BATTERY,
                 native_unit_of_measurement=Units.PERCENTAGE,
             ),
@@ -336,10 +336,10 @@ def test_tp960r():
                 name="Signal " "Strength",
                 native_value=-75,
             ),
-            DeviceKey(key="battery", device_id=None): SensorValue(
-                device_key=DeviceKey(key="battery", device_id=None),
-                name="Battery",
-                native_value=0.39,
+            DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery_probe_1", device_id=None),
+                name="Probe 1 Battery",
+                native_value=39,
             ),
         },
         binary_entity_descriptions={},
@@ -378,8 +378,8 @@ def test_tp960r():
                 device_class=SensorDeviceClass.SIGNAL_STRENGTH,
                 native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
             ),
-            DeviceKey(key="battery", device_id=None): SensorDescription(
-                device_key=DeviceKey(key="battery", device_id=None),
+            DeviceKey(key="battery_probe_1", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery_probe_1", device_id=None),
                 device_class=SensorDeviceClass.BATTERY,
                 native_unit_of_measurement=Units.PERCENTAGE,
             ),
@@ -402,10 +402,10 @@ def test_tp960r():
                 name="Signal " "Strength",
                 native_value=-75,
             ),
-            DeviceKey(key="battery", device_id=None): SensorValue(
-                device_key=DeviceKey(key="battery", device_id=None),
-                name="Battery",
-                native_value=0.39,
+            DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery_probe_1", device_id=None),
+                name="Probe 1 Battery",
+                native_value=39,
             ),
         },
         binary_entity_descriptions={},
@@ -448,8 +448,8 @@ def test_tp962r():
                 device_class=SensorDeviceClass.SIGNAL_STRENGTH,
                 native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
             ),
-            DeviceKey(key="battery", device_id=None): SensorDescription(
-                device_key=DeviceKey(key="battery", device_id=None),
+            DeviceKey(key="battery_probe_2", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery_probe_2", device_id=None),
                 device_class=SensorDeviceClass.BATTERY,
                 native_unit_of_measurement=Units.PERCENTAGE,
             ),
@@ -472,10 +472,10 @@ def test_tp962r():
                 name="Signal " "Strength",
                 native_value=-52,
             ),
-            DeviceKey(key="battery", device_id=None): SensorValue(
-                device_key=DeviceKey(key="battery", device_id=None),
-                name="Battery",
-                native_value=1.0,
+            DeviceKey(key="battery_probe_2", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery_probe_2", device_id=None),
+                name="Probe 2 Battery",
+                native_value=100,
             ),
         },
         binary_entity_descriptions={},
@@ -521,8 +521,13 @@ def test_tp962r():
                 device_class=SensorDeviceClass.TEMPERATURE,
                 native_unit_of_measurement=Units.TEMP_CELSIUS,
             ),
-            DeviceKey(key="battery", device_id=None): SensorDescription(
-                device_key=DeviceKey(key="battery", device_id=None),
+            DeviceKey(key="battery_probe_2", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery_probe_2", device_id=None),
+                device_class=SensorDeviceClass.BATTERY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+            DeviceKey(key="battery_probe_1", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery_probe_1", device_id=None),
                 device_class=SensorDeviceClass.BATTERY,
                 native_unit_of_measurement=Units.PERCENTAGE,
             ),
@@ -559,10 +564,15 @@ def test_tp962r():
                 name="Probe " "2 " "Ambient " "Temperature",
                 native_value=25,
             ),
-            DeviceKey(key="battery", device_id=None): SensorValue(
-                device_key=DeviceKey(key="battery", device_id=None),
-                name="Battery",
-                native_value=0.77,
+            DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery_probe_1", device_id=None),
+                name="Probe 1 Battery",
+                native_value=77,
+            ),
+            DeviceKey(key="battery_probe_2", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery_probe_2", device_id=None),
+                name="Probe 2 Battery",
+                native_value=100,
             ),
             DeviceKey(key="internal_temperature_probe_2", device_id=None): SensorValue(
                 device_key=DeviceKey(

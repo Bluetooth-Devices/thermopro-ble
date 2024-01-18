@@ -81,7 +81,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             probe_one_indexed = probe_zero_indexed + 1
             internal_temp = internal_temp - 30
             ambient_temp = ambient_temp - 30
-            battery_percent = (battery - TP96_MIN_BAT) / bat_range
+            battery_percent = ((battery - TP96_MIN_BAT) / bat_range) * 100
             self.update_predefined_sensor(
                 SensorLibrary.TEMPERATURE__CELSIUS,
                 internal_temp,
@@ -94,10 +94,13 @@ class ThermoProBluetoothDeviceData(BluetoothData):
                 key=f"ambient_temperature_probe_{probe_one_indexed}",
                 name=f"Probe {probe_one_indexed} Ambient Temperature",
             )
+            self.set_precision(0)
             self.update_predefined_sensor(
-                SensorLibrary.BATTERY__PERCENTAGE, battery_percent
+                SensorLibrary.BATTERY__PERCENTAGE,
+                battery_percent,
+                key=f"battery_probe_{probe_one_indexed}",
+                name=f"Probe {probe_one_indexed} Battery",
             )
-
             return
 
         # TP357S seems to be in 6, TP397 and TP393 in 4
