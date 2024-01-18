@@ -46,13 +46,8 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             return
         model = name.split(" ")[0]
         self.set_device_type(model)
-        if model.startswith("TP96"):
-            # This series can have multiple probes, so we must assume probe 1
-            self.set_title(f"{name} Probe 1 {short_address(service_info.address)}")
-            self.set_device_name(f"{name} PROBE 1")
-        else:
-            self.set_title(f"{name} {short_address(service_info.address)}")
-            self.set_device_name(name)
+        self.set_title(f"{name} {short_address(service_info.address)}")
+        self.set_device_name(name)
         self.set_precision(2)
         self.set_device_manufacturer("ThermoPro")
         changed_manufacturer_data = self.changed_manufacturer_data(service_info)
@@ -77,30 +72,27 @@ class ThermoProBluetoothDeviceData(BluetoothData):
 
             # TP96 has a different format
             # It has an internal temp probe and an ambient temp probe
-            (probe_index, internal_temp, battery, ambient_temp) = UNPACK_SPIKE_TEMP(
-                data
-            )
-            probe_index += 1
+            (
+                probe_zero_indexed,
+                internal_temp,
+                battery,
+                ambient_temp,
+            ) = UNPACK_SPIKE_TEMP(data)
+            probe_one_indexed = probe_zero_indexed + 1
             internal_temp = internal_temp - 30
             ambient_temp = ambient_temp - 30
             battery_percent = (battery - TP96_MIN_BAT) / bat_range
-
-            self.set_title(
-                f"{name} Probe {probe_index} {short_address(service_info.address)}"
-            )
-            self.set_device_name(f"{name} PROBE {probe_index}")
-
             self.update_predefined_sensor(
                 SensorLibrary.TEMPERATURE__CELSIUS,
                 internal_temp,
-                key="internal_temperature",
-                name="Internal Temperature",
+                key=f"internal_temperature_probe_{probe_one_indexed}",
+                name=f"Probe {probe_one_indexed} Internal Temperature",
             )
             self.update_predefined_sensor(
                 SensorLibrary.TEMPERATURE__CELSIUS,
                 ambient_temp,
-                key="ambient_temperature",
-                name="Ambient Temperature",
+                key=f"ambient_temperature_probe_{probe_one_indexed}",
+                name=f"Probe {probe_one_indexed} Ambient Temperature",
             )
             self.update_predefined_sensor(
                 SensorLibrary.BATTERY__PERCENTAGE, battery_percent
