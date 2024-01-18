@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.0 (2024-01-18)
+
+### Feature
+
+* **temp-spike:** Battery tweaks for TP96x ([#20](https://github.com/Bluetooth-Devices/thermopro-ble/issues/20)) ([`19c07bf`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/19c07bf1c015642db360be643ba80e2834c5e6c2))
+
 ## v0.7.0 (2024-01-18)
 
 ### Feature
