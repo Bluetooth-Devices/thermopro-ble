@@ -28,7 +28,7 @@ UNPACK_TEMP_HUMID = Struct("<hB").unpack
 UNPACK_SPIKE_TEMP = Struct("<BHHH").unpack
 
 TP96_MAX_BAT = 2880
-TP96_MIN_BAT = 1600  # ??
+TP96_MIN_BAT = 2000  # ??
 
 
 class ThermoProBluetoothDeviceData(BluetoothData):
@@ -82,6 +82,8 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             internal_temp = internal_temp - 30
             ambient_temp = ambient_temp - 30
             battery_percent = ((battery - TP96_MIN_BAT) / bat_range) * 100
+            if battery_percent > 100:
+                battery_percent = 100
             self.update_predefined_sensor(
                 SensorLibrary.TEMPERATURE__CELSIUS,
                 internal_temp,
