@@ -280,10 +280,10 @@ def test_tp357():
 def test_tp960r():
     parser = ThermoProBluetoothDeviceData()
     assert parser.update(TP960R) == SensorUpdate(
-        title="TP960R (0000) EEFF",
+        title="TP960R (0000) Probe 1 EEFF",
         devices={
             None: SensorDeviceInfo(
-                name="TP960R (0000)",
+                name="TP960R (0000) PROBE 1",
                 model="TP960R",
                 manufacturer="ThermoPro",
                 sw_version=None,
@@ -338,10 +338,10 @@ def test_tp960r():
         binary_entity_values={},
     )
     assert parser.update(TP960R_2) == SensorUpdate(
-        title="TP960R (0000) EEFF",
+        title="TP960R (0000) Probe 1 EEFF",
         devices={
             None: SensorDeviceInfo(
-                name="TP960R (0000)",
+                name="TP960R (0000) PROBE 1",
                 model="TP960R",
                 manufacturer="ThermoPro",
                 sw_version=None,
@@ -400,10 +400,10 @@ def test_tp960r():
 def test_tp962r():
     parser = ThermoProBluetoothDeviceData()
     assert parser.update(TP962R) == SensorUpdate(
-        title="TP962R (0000) White EEFF",
+        title="TP962R (0000) Probe 2 EEFF",
         devices={
             None: SensorDeviceInfo(
-                name="TP962R (0000) WHITE",
+                name="TP962R (0000) PROBE 2",
                 model="TP962R",
                 manufacturer="ThermoPro",
                 sw_version=None,
@@ -458,10 +458,10 @@ def test_tp962r():
         binary_entity_values={},
     )
     assert parser.update(TP962R_2) == SensorUpdate(
-        title="TP962R (0000) Black EEFF",
+        title="TP962R (0000) Probe 1 EEFF",
         devices={
             None: SensorDeviceInfo(
-                name="TP962R (0000) BLACK",
+                name="TP962R (0000) PROBE 1",
                 model="TP962R",
                 manufacturer="ThermoPro",
                 sw_version=None,

@@ -27,13 +27,6 @@ BATTERY_VALUE_TO_LEVEL = {
 UNPACK_TEMP_HUMID = Struct("<hB").unpack
 UNPACK_SPIKE_TEMP = Struct("<BHHH").unpack
 
-MULTIPROBE_DEVICES = {
-    "TP962R": {
-        0: "black",
-        1: "white",
-    },
-}
-
 TP96_MAX_BAT = 2880
 TP96_MIN_BAT = 1600  # ??
 
@@ -53,8 +46,13 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             return
         model = name.split(" ")[0]
         self.set_device_type(model)
-        self.set_title(f"{name} {short_address(service_info.address)}")
-        self.set_device_name(name)
+        if model.startswith("TP96"):
+            # This series can have multiple probes, so we must assume probe 1
+            self.set_title(f"{name} Probe 1 {short_address(service_info.address)}")
+            self.set_device_name(f"{name} PROBE 1")
+        else:
+            self.set_title(f"{name} {short_address(service_info.address)}")
+            self.set_device_name(name)
         self.set_precision(2)
         self.set_device_manufacturer("ThermoPro")
         changed_manufacturer_data = self.changed_manufacturer_data(service_info)
@@ -76,24 +74,22 @@ class ThermoProBluetoothDeviceData(BluetoothData):
 
         if name.startswith("TP96"):
             bat_range = TP96_MAX_BAT - TP96_MIN_BAT
+
+            # TP96 has a different format
+            # It has an internal temp probe and an ambient temp probe
             (probe_index, internal_temp, battery, ambient_temp) = UNPACK_SPIKE_TEMP(
                 data
             )
+            probe_index += 1
             internal_temp = internal_temp - 30
             ambient_temp = ambient_temp - 30
             battery_percent = (battery - TP96_MIN_BAT) / bat_range
 
-            multiprobe_mapping = MULTIPROBE_DEVICES.get(model, {0: ""})
-            probe_name = multiprobe_mapping.get(probe_index, str(probe_index))
-            if probe_name:
-                self.set_title(
-                    f"{name} {probe_name.capitalize()} "
-                    f"{short_address(service_info.address)}"
-                )
-                self.set_device_name(f"{name} {probe_name.upper()}")
+            self.set_title(
+                f"{name} Probe {probe_index} {short_address(service_info.address)}"
+            )
+            self.set_device_name(f"{name} PROBE {probe_index}")
 
-            # TP96 has a different format
-            # It has an internal temp probe and an ambient temp probe
             self.update_predefined_sensor(
                 SensorLibrary.TEMPERATURE__CELSIUS,
                 internal_temp,
