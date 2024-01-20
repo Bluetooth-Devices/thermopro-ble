@@ -27,8 +27,12 @@ BATTERY_VALUE_TO_LEVEL = {
 UNPACK_TEMP_HUMID = Struct("<hB").unpack
 UNPACK_SPIKE_TEMP = Struct("<BHHH").unpack
 
+# TP96x battery values appear to be a voltage reading, probably in millivolts.
+# This means that calculating battery life from it should be a non-linear
+# function.
+# TODO: Find a a reasonalbe approximation of the voltage discharge curve.
 TP96_MAX_BAT = 2880
-TP96_MIN_BAT = 2000  # ??
+TP96_MIN_BAT = 1850
 
 
 class ThermoProBluetoothDeviceData(BluetoothData):
@@ -82,6 +86,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             internal_temp = internal_temp - 30
             ambient_temp = ambient_temp - 30
             battery_percent = ((battery - TP96_MIN_BAT) / bat_range) * 100
+            battery_percent = max(0, min(battery_percent, 100))
             if battery_percent > 100:
                 battery_percent = 100
             self.update_predefined_sensor(
