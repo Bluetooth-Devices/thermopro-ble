@@ -36,9 +36,9 @@ UNPACK_SPIKE_TEMP = Struct("<BHHH").unpack
 # A*tanh(B*x+C)+D
 # Where A,B,C,D are the variables to optimize for.  This yielded the below function
 def tp96_battery(voltage: int) -> float:
-    raw = 0.52317286 * tanh(voltage / 273.624277936 - 8.76485439394) + 0.5106925
-    clamped = max(0, min(raw, 1))
-    return round(clamped * 100, 2)
+    raw = 52.317286 * tanh(voltage / 273.624277936 - 8.76485439394) + 51.06925
+    clamped = max(0, min(raw, 100))
+    return round(clamped, 2)
 
 
 class ThermoProBluetoothDeviceData(BluetoothData):
