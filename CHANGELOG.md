@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.9.0 (2024-01-24)
+
+### Feature
+
+* **temp-spike:** Temp spike battery improvements ([#21](https://github.com/Bluetooth-Devices/thermopro-ble/issues/21)) ([`6504772`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/6504772dc353bbb2bd4ed5958af41635a3479af6))
+* **temp-spike:** Temp spike battery improvements ([#21](https://github.com/Bluetooth-Devices/thermopro-ble/issues/21)) ([`ab44bae`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/ab44baef8a3fe8a988c53e19370a29bb434b24cc))
+
 ## v0.8.0 (2024-01-18)
 
 ### Feature
