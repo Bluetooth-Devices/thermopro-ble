@@ -90,8 +90,6 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             internal_temp = internal_temp - 30
             ambient_temp = ambient_temp - 30
             battery_percent = tp96_battery(battery_voltage)
-            if battery_percent > 100:
-                battery_percent = 100
             self.update_predefined_sensor(
                 SensorLibrary.TEMPERATURE__CELSIUS,
                 internal_temp,
