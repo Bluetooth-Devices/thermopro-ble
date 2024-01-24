@@ -339,7 +339,7 @@ def test_tp960r():
             DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery_probe_1", device_id=None),
                 name="Probe 1 Battery",
-                native_value=11,
+                native_value=9,
             ),
         },
         binary_entity_descriptions={},
@@ -405,7 +405,7 @@ def test_tp960r():
             DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery_probe_1", device_id=None),
                 name="Probe 1 Battery",
-                native_value=11,
+                native_value=9,
             ),
         },
         binary_entity_descriptions={},
@@ -475,7 +475,7 @@ def test_tp962r():
             DeviceKey(key="battery_probe_2", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery_probe_2", device_id=None),
                 name="Probe 2 Battery",
-                native_value=99,
+                native_value=100.0,
             ),
         },
         binary_entity_descriptions={},
@@ -567,12 +567,12 @@ def test_tp962r():
             DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery_probe_1", device_id=None),
                 name="Probe 1 Battery",
-                native_value=66,
+                native_value=82,
             ),
             DeviceKey(key="battery_probe_2", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery_probe_2", device_id=None),
                 name="Probe 2 Battery",
-                native_value=99,
+                native_value=100.0,
             ),
             DeviceKey(key="internal_temperature_probe_2", device_id=None): SensorValue(
                 device_key=DeviceKey(
