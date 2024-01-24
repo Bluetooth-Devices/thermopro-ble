@@ -8,6 +8,7 @@ MIT License applies.
 from __future__ import annotations
 
 import logging
+from math import tanh
 from struct import Struct
 
 from bluetooth_data_tools import short_address
@@ -27,12 +28,17 @@ BATTERY_VALUE_TO_LEVEL = {
 UNPACK_TEMP_HUMID = Struct("<hB").unpack
 UNPACK_SPIKE_TEMP = Struct("<BHHH").unpack
 
+
 # TP96x battery values appear to be a voltage reading, probably in millivolts.
-# This means that calculating battery life from it should be a non-linear
-# function.
-# TODO: Find a a reasonalbe approximation of the voltage discharge curve.
-TP96_MAX_BAT = 2880
-TP96_MIN_BAT = 1850
+# This means that calculating battery life from it is a non-linear function.
+# Examining the curve, it looked fairly close to a curve from the tanh function.
+# So, I created a script to use Tensorflow to optimize an equation in the format
+# A*tanh(B*x+C)+D
+# Where A,B,C,D are the variables to optimize for.  This yielded the below function
+def tp96_battery(voltage: int) -> float:
+    raw = 0.52317286 * tanh(voltage / 273.624277936 - 8.76485439394) + 0.5106925
+    clamped = max(0, min(raw, 1))
+    return round(clamped * 100, 2)
 
 
 class ThermoProBluetoothDeviceData(BluetoothData):
@@ -72,21 +78,18 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             return
 
         if name.startswith("TP96"):
-            bat_range = TP96_MAX_BAT - TP96_MIN_BAT
-
             # TP96 has a different format
             # It has an internal temp probe and an ambient temp probe
             (
                 probe_zero_indexed,
                 internal_temp,
-                battery,
+                battery_voltage,
                 ambient_temp,
             ) = UNPACK_SPIKE_TEMP(data)
             probe_one_indexed = probe_zero_indexed + 1
             internal_temp = internal_temp - 30
             ambient_temp = ambient_temp - 30
-            battery_percent = ((battery - TP96_MIN_BAT) / bat_range) * 100
-            battery_percent = max(0, min(battery_percent, 100))
+            battery_percent = tp96_battery(battery_voltage)
             if battery_percent > 100:
                 battery_percent = 100
             self.update_predefined_sensor(
