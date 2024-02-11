@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.0 (2024-02-11)
+
+### Feature
+
+* Add support for TP970R ([#22](https://github.com/Bluetooth-Devices/thermopro-ble/issues/22)) ([`8f58f9a`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/8f58f9ad7646616e3ad974ae1dbd6b498c33fa75))
+
 ## v0.9.0 (2024-01-24)
 
 ### Feature
