@@ -48,7 +48,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         """Update from BLE advertisement data."""
         _LOGGER.debug("Parsing thermopro BLE advertisement data: %s", service_info)
         name = service_info.name
-        if not name.startswith(("TP35", "TP39", "TP96")):
+        if not name.startswith(("TP35", "TP39", "TP96", "TP97")):
             return
         if not service_info.manufacturer_data:
             return
@@ -77,7 +77,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         if len(data) < 6:
             return
 
-        if name.startswith("TP96"):
+        if name.startswith(("TP96", "TP97")):
             # TP96 has a different format
             # It has an internal temp probe and an ambient temp probe
             (
