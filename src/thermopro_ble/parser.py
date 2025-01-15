@@ -34,6 +34,7 @@ ABSOLUTE_MIN_HUMIDITY__PERCENTAGE = 0
 ABSOLUTE_MAX_HUMIDITY__PERCENTAGE = 100
 ABSOLUTE_MIN_TEMPERATURE__CELCIUS = -273.15
 
+
 # TP96x battery values appear to be a voltage reading, probably in millivolts.
 # This means that calculating battery life from it is a non-linear function.
 # Examining the curve, it looked fairly close to a curve from the tanh function.
@@ -45,15 +46,21 @@ def tp96_battery(voltage: int) -> float:
     clamped = max(0, min(raw, 100))
     return round(clamped, 2)
 
-def is_temp_hum_invalid(temperature: Union[int, float], humidity: Union[int, float]) -> bool:
+
+def is_temp_hum_invalid(temperature: int | float, humidity: int | float) -> bool:
     """Returns true if the measured values are outside the physically possible range."""
     # Note: This will not catch implausibly high temperature values, but a clear
     # upper temperature cutoff is not easy to define
     if temperature < ABSOLUTE_MIN_TEMPERATURE__CELCIUS:
         return True
-    if not (ABSOLUTE_MIN_HUMIDITY__PERCENTAGE <= humidity <= ABSOLUTE_MAX_HUMIDITY__PERCENTAGE):
+    if not (
+        ABSOLUTE_MIN_HUMIDITY__PERCENTAGE
+        <= humidity
+        <= ABSOLUTE_MAX_HUMIDITY__PERCENTAGE
+    ):
         return True
     return False
+
 
 class ThermoProBluetoothDeviceData(BluetoothData):
     """Date update for ThermoPro Bluetooth devices."""
@@ -105,10 +112,12 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             ambient_temp = ambient_temp - 30
             battery_percent = tp96_battery(battery_voltage)
 
-            if is_temp_hum_invalid(internal_temp, 0) or is_temp_hum_invalid(ambient_temp, 0):
+            if is_temp_hum_invalid(internal_temp, 0) or is_temp_hum_invalid(
+                ambient_temp, 0
+            ):
                 # Invalid packet, probably corrupted
                 return
-            
+
             self.update_predefined_sensor(
                 SensorLibrary.TEMPERATURE__CELSIUS,
                 internal_temp,
@@ -129,7 +138,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
                 name=f"Probe {probe_one_indexed} Battery",
             )
         else:
-           # TP357S seems to be in 6, TP397 and TP393 in 4
+            # TP357S seems to be in 6, TP397 and TP393 in 4
             battery_byte = data[6] if len(data) == 7 else data[4]
             (temp_deci, humi) = UNPACK_TEMP_HUMID(data[1:4])
             temp = temp_deci / 10
@@ -137,12 +146,12 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             if is_temp_hum_invalid(temp, humi):
                 # Invalid data, probably corrupted
                 return
-            
+
             if battery_byte in BATTERY_VALUE_TO_LEVEL:
                 self.update_predefined_sensor(
                     SensorLibrary.BATTERY__PERCENTAGE,
                     BATTERY_VALUE_TO_LEVEL[battery_byte],
                 )
-    
+
             self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temp)
             self.update_predefined_sensor(SensorLibrary.HUMIDITY__PERCENTAGE, humi)
