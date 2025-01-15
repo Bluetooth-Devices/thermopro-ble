@@ -11,7 +11,6 @@ from __future__ import annotations
 import logging
 from math import tanh
 from struct import Struct
-from typing import Union
 
 from bluetooth_data_tools import short_address
 from bluetooth_sensor_state_data import BluetoothData
