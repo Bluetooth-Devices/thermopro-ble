@@ -14,11 +14,13 @@ from sensor_state_data import (
     Units,
 )
 
+from .device import ThermoProDevice
 from .parser import ThermoProBluetoothDeviceData
 
 __version__ = "0.10.0"
 
 __all__ = [
+    "ThermoProDevice",
     "ThermoProBluetoothDeviceData",
     "BinarySensorDeviceClass",
     "BinarySensorValue",
