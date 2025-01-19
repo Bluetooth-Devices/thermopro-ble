@@ -282,7 +282,7 @@ def test_tp357():
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
-                name="Signal " "Strength",
+                name="Signal Strength",
                 native_value=-60,
             ),
             DeviceKey(key="battery", device_id=None): SensorValue(
@@ -352,7 +352,7 @@ def test_tp960r():
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
-                name="Signal " "Strength",
+                name="Signal Strength",
                 native_value=-75,
             ),
             DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
@@ -418,7 +418,7 @@ def test_tp960r():
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
-                name="Signal " "Strength",
+                name="Signal Strength",
                 native_value=-75,
             ),
             DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
@@ -488,7 +488,7 @@ def test_tp962r():
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
-                name="Signal " "Strength",
+                name="Signal Strength",
                 native_value=-52,
             ),
             DeviceKey(key="battery_probe_2", device_id=None): SensorValue(
@@ -563,24 +563,24 @@ def test_tp962r():
         entity_values={
             DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
-                name="Probe " "1 " "Ambient " "Temperature",
+                name="Probe 1 Ambient Temperature",
                 native_value=37,
             ),
             DeviceKey(key="internal_temperature_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(
                     key="internal_temperature_probe_1", device_id=None
                 ),
-                name="Probe " "1 " "Internal " "Temperature",
+                name="Probe 1 Internal Temperature",
                 native_value=37,
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
-                name="Signal " "Strength",
+                name="Signal Strength",
                 native_value=-52,
             ),
             DeviceKey(key="ambient_temperature_probe_2", device_id=None): SensorValue(
                 device_key=DeviceKey(key="ambient_temperature_probe_2", device_id=None),
-                name="Probe " "2 " "Ambient " "Temperature",
+                name="Probe 2 Ambient Temperature",
                 native_value=25,
             ),
             DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
@@ -597,7 +597,7 @@ def test_tp962r():
                 device_key=DeviceKey(
                     key="internal_temperature_probe_2", device_id=None
                 ),
-                name="Probe " "2 " "Internal " "Temperature",
+                name="Probe 2 Internal Temperature",
                 native_value=25,
             ),
         },
@@ -655,7 +655,7 @@ def test_tp357s():
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
-                name="Signal " "Strength",
+                name="Signal Strength",
                 native_value=-60,
             ),
             DeviceKey(key="battery", device_id=None): SensorValue(
@@ -713,7 +713,7 @@ def test_tp357s():
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
-                name="Signal " "Strength",
+                name="Signal Strength",
                 native_value=-60,
             ),
             DeviceKey(key="battery", device_id=None): SensorValue(
@@ -765,7 +765,7 @@ def test_tp357_add():
         entity_values={
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
-                name="Signal " "Strength",
+                name="Signal Strength",
                 native_value=-60,
             ),
             DeviceKey(key="temperature", device_id=None): SensorValue(
@@ -832,7 +832,7 @@ def test_tp393():
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
-                name="Signal " "Strength",
+                name="Signal Strength",
                 native_value=-60,
             ),
             DeviceKey(key="humidity", device_id=None): SensorValue(
@@ -877,7 +877,7 @@ def test_tp393_multi_updates():
         entity_values={
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
-                name="Signal " "Strength",
+                name="Signal Strength",
                 native_value=-60,
             )
         },
@@ -930,24 +930,24 @@ def test_tp970r():
         entity_values={
             DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery_probe_1", device_id=None),
-                name="Probe " "1 " "Battery",
+                name="Probe 1 Battery",
                 native_value=100,
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
-                name="Signal " "Strength",
+                name="Signal Strength",
                 native_value=-75,
             ),
             DeviceKey(key="internal_temperature_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(
                     key="internal_temperature_probe_1", device_id=None
                 ),
-                name="Probe " "1 " "Internal " "Temperature",
+                name="Probe 1 Internal Temperature",
                 native_value=23,
             ),
             DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
-                name="Probe " "1 " "Ambient " "Temperature",
+                name="Probe 1 Ambient Temperature",
                 native_value=23,
             ),
         },
@@ -997,24 +997,24 @@ def test_tp970r():
         entity_values={
             DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery_probe_1", device_id=None),
-                name="Probe " "1 " "Battery",
+                name="Probe 1 Battery",
                 native_value=100,
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
-                name="Signal " "Strength",
+                name="Signal Strength",
                 native_value=-75,
             ),
             DeviceKey(key="internal_temperature_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(
                     key="internal_temperature_probe_1", device_id=None
                 ),
-                name="Probe " "1 " "Internal " "Temperature",
+                name="Probe 1 Internal Temperature",
                 native_value=22,
             ),
             DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
-                name="Probe " "1 " "Ambient " "Temperature",
+                name="Probe 1 Ambient Temperature",
                 native_value=22,
             ),
         },
