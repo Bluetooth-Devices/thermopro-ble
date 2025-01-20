@@ -51,10 +51,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         name = service_info.name
         if not name.startswith(("TP35", "TP39", "TP96", "TP97")):
             return
-        if not service_info.manufacturer_data:
-            return
-        if len(list(service_info.manufacturer_data.values())[0]) < 4:
-            return
+
         model = name.split(" ")[0]
         self.set_device_type(model)
         self.set_title(f"{name} {short_address(service_info.address)}")
