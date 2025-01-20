@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.1 (2025-01-20)
+
+### Fix
+
+* Avoid rejecting manufacturer_data if the first value short ([#47](https://github.com/Bluetooth-Devices/thermopro-ble/issues/47)) ([`507cd33`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/507cd33b6733a5281696dec344b402ccee34b4ff))
+
 ## v0.10.0 (2024-02-11)
 
 ### Feature
