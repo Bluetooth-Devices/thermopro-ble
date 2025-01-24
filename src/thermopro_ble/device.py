@@ -1,39 +1,27 @@
 from __future__ import annotations
 
-from contextlib import AsyncExitStack
 from datetime import datetime
 from struct import pack
 from uuid import UUID
 
 from bleak import BleakClient
 from bleak.backends.device import BLEDevice
+from bleak_retry_connector import establish_connection
 
 
 class ThermoProDevice:
     datetime_uuid = UUID("00010203-0405-0607-0809-0a0b0c0d2b11")
 
-    def __init__(self: ThermoProDevice, ble: BLEDevice):
-        self.ble = ble
-        self.stack = AsyncExitStack()
-        self.client = None
-
-    # required as otherwise linting is complaining about the return value
-    async def _connect(self: ThermoProDevice, timeout: int = 30) -> BleakClient:
-        return await self.stack.enter_async_context(
-            BleakClient(self.ble, timeout=timeout)
-        )
-
-    async def connect(self: ThermoProDevice, timeout: int = 30) -> BleakClient:
-        if not self.client:
-            self.client = await self._connect(timeout=timeout)
-        return self.client
+    def __init__(self: ThermoProDevice, ble_device: BLEDevice):
+        self.ble_device = ble_device
 
     # ----
     # from https://github.com/koenvervloesem/bluetooth-clocks/
     # Copyright (c) 2023 Koen Vervloesem
     # MIT License
     # ----
-    def pack_datetime(self: ThermoProDevice, dt: datetime, ampm: bool = False) -> bytes:
+    @staticmethod
+    def pack_datetime(dt: datetime, ampm: bool) -> bytes:
         return pack(
             "BBBBBBBBBB",
             0xA5,
@@ -50,8 +38,20 @@ class ThermoProDevice:
 
     # ----
 
-    async def set_datetime(self: ThermoProDevice, dt: datetime) -> None:
-        client = await self.connect()
-        await client.write_gatt_char(
-            ThermoProDevice.datetime_uuid, self.pack_datetime(dt), True
+    # not covered due to complex nature of mechanism
+    async def connect(self: ThermoProDevice) -> BleakClient:
+        return await establish_connection(  # pragma: no cover
+            BleakClient, self.ble_device, self.ble_device.address
         )
+
+    async def set_datetime(self: ThermoProDevice, dt: datetime, ampm: bool) -> None:
+        client = await self.connect()
+
+        try:
+            await client.write_gatt_char(
+                ThermoProDevice.datetime_uuid,
+                ThermoProDevice.pack_datetime(dt, ampm),
+                True,
+            )
+        finally:
+            await client.disconnect()
