@@ -226,6 +226,128 @@ TP970R_2 = BluetoothServiceInfo(
     service_data={},
     source="local",
 )
+TP357S_UPDATE_1 = BluetoothServiceInfo(
+    name="TP357S (C890)",
+    address="C3:18:C9:9C:C8:90",
+    rssi=-57,
+    manufacturer_data={
+        51138: b'\x00\x14"\x0b\x01',
+        50882: b'\x00\x14"\x0b\x01',
+        51394: b'\x00\x14"\x0b\x01',
+        51650: b'\x00\x14"\x0b\x01',
+        50626: b'\x00\x14"\x0b\x01',
+        50370: b'\x00\x14"\x0b\x01',
+        51906: b'\x00\x14"\x0b\x01',
+        50114: b'\x00\x14"\x0b\x01',
+        52162: b'\x00\x14"\x0b\x01',
+        52418: b'\x00\x14"\x0b\x01',
+        52674: b'\x00\x14"\x0b\x01',
+        49858: b'\x00\x14"\x0b\x01',
+        52930: b'\x00\x14"\x0b\x01',
+        53442: b'\x00\x19"\x0b\x01',
+        53698: b'\x00\x14"\x0b\x01',
+        53954: b'\x00\x14"\x0b\x01',
+        54210: b'\x00\x14"\x0b\x01',
+        54466: b'\x00\x14"\x0b\x01',
+        54722: b'\x00\x14"\x0b\x01',
+        54978: b'\x00\x14"\x0b\x01',
+    },
+    service_data={},
+    service_uuids=[],
+    source="2C:CF:67:1B:03:3A",
+)
+TP357S_UPDATE_2 = BluetoothServiceInfo(
+    name="TP357S (C890)",
+    address="C3:18:C9:9C:C8:90",
+    rssi=-56,
+    manufacturer_data={
+        51138: b'\x00\x14"\x0b\x01',
+        50882: b'\x00\x14"\x0b\x01',
+        51394: b'\x00\x14"\x0b\x01',
+        51650: b'\x00\x14"\x0b\x01',
+        50626: b'\x00\x14"\x0b\x01',
+        50370: b'\x00\x14"\x0b\x01',
+        51906: b'\x00\x14"\x0b\x01',
+        50114: b'\x00\x14"\x0b\x01',
+        52162: b'\x00\x14"\x0b\x01',
+        52418: b'\x00\x14"\x0b\x01',
+        52674: b'\x00\x14"\x0b\x01',
+        49858: b'\x00\x14"\x0b\x01',
+        52930: b'\x00\x14"\x0b\x01',
+        53442: b'\x00\x14"\x0b\x01',
+        53698: b'\x00\x14"\x0b\x01',
+        53954: b'\x00\x14"\x0b\x01',
+        54210: b'\x00\x14"\x0b\x01',
+        54466: b'\x00\x14"\x0b\x01',
+        54722: b'\x00\x14"\x0b\x01',
+        54978: b'\x00\x14"\x0b\x01',
+    },
+    service_data={},
+    service_uuids=[],
+    source="2C:CF:67:1B:03:3A",
+)
+TP357S_UPDATE_3 = BluetoothServiceInfo(
+    name="TP357S (C890)",
+    address="C3:18:C9:9C:C8:90",
+    rssi=-65,
+    manufacturer_data={
+        51138: b'\x00\x14"\x0b\x01',
+        50882: b'\x00\x14"\x0b\x01',
+        51394: b'\x00\x14"\x0b\x01',
+        51650: b'\x00\x14"\x0b\x01',
+        50626: b'\x00\x14"\x0b\x01',
+        50370: b'\x00\x14"\x0b\x01',
+        51906: b'\x00\x14"\x0b\x01',
+        50114: b'\x00\x14"\x0b\x01',
+        52162: b'\x00\x14"\x0b\x01',
+        52418: b'\x00\x14"\x0b\x01',
+        52674: b'\x00\x14"\x0b\x01',
+        49858: b'\x00\x14"\x0b\x01',
+        52930: b'\x00\x14"\x0b\x01',
+        53442: b'\x00\x14"\x0b\x01',
+        53698: b'\x00\x14"\x0b\x01',
+        53954: b'\x00\x14"\x0b\x01',
+        54210: b'\x00\x14"\x0b\x01',
+        54466: b'\x00\x14"\x0b\x01',
+        54722: b'\x00\x14"\x0b\x01',
+        54978: b'\x00\x14"\x0b\x01',
+        53186: b'\x00\x14"\x0b\x01',
+    },
+    service_data={},
+    service_uuids=[],
+    source="2C:CF:67:1B:03:3A",
+)
+TP357S_UPDATE_4 = BluetoothServiceInfo(
+    name="TP357S (C890)",
+    address="C3:18:C9:9C:C8:90",
+    rssi=-55,
+    manufacturer_data={
+        51138: b'\x00\x14"\x0b\x01',
+        50882: b'\x00\x14"\x0b\x01',
+        51394: b'\x00\n"\x0b\x01',
+        51650: b'\x00\x14"\x0b\x01',
+        50626: b'\x00\x14"\x0b\x01',
+        50370: b'\x00\x14"\x0b\x01',
+        51906: b'\x00\x14"\x0b\x01',
+        50114: b'\x00\x14"\x0b\x01',
+        52162: b'\x00\x14"\x0b\x01',
+        52418: b'\x00\x14"\x0b\x01',
+        52674: b'\x00\x14"\x0b\x01',
+        49858: b'\x00\x14"\x0b\x01',
+        52930: b'\x00\x14"\x0b\x01',
+        53442: b'\x00\x14"\x0b\x01',
+        53698: b'\x00\x14"\x0b\x01',
+        53954: b'\x00\x14"\x0b\x01',
+        54210: b'\x00\x14"\x0b\x01',
+        54466: b'\x00\x14"\x0b\x01',
+        54722: b'\x00\x14"\x0b\x01',
+        54978: b'\x00\x14"\x0b\x01',
+        53186: b'\x00\x14"\x0b\x01',
+    },
+    service_data={},
+    service_uuids=[],
+    source="2C:CF:67:1B:03:3A",
+)
 
 
 def test_supported_set_the_title():
@@ -1016,6 +1138,218 @@ def test_tp970r():
                 device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
                 name="Probe 1 Ambient Temperature",
                 native_value=22,
+            ),
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+        events={},
+    )
+
+
+def test_tp357s_four_updates():
+    parser = ThermoProBluetoothDeviceData()
+
+    assert parser.update(TP357S_UPDATE_1) == SensorUpdate(
+        title="TP357S (C890) C890",
+        devices={
+            None: SensorDeviceInfo(
+                name="TP357S (C890)",
+                model="TP357S",
+                manufacturer="ThermoPro",
+                sw_version=None,
+                hw_version=None,
+            )
+        },
+        entity_descriptions={
+            DeviceKey(key="signal_strength", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+            )
+        },
+        entity_values={
+            DeviceKey(key="signal_strength", device_id=None): SensorValue(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                name="Signal Strength",
+                native_value=-57,
+            )
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+        events={},
+    )
+
+    assert parser.update(TP357S_UPDATE_2) == SensorUpdate(
+        title="TP357S (C890) C890",
+        devices={
+            None: SensorDeviceInfo(
+                name="TP357S (C890)",
+                model="TP357S",
+                manufacturer="ThermoPro",
+                sw_version=None,
+                hw_version=None,
+            )
+        },
+        entity_descriptions={
+            DeviceKey(key="signal_strength", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+            ),
+            DeviceKey(key="temperature", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(key="battery", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery", device_id=None),
+                device_class=SensorDeviceClass.BATTERY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+            DeviceKey(key="humidity", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="humidity", device_id=None),
+                device_class=SensorDeviceClass.HUMIDITY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+        },
+        entity_values={
+            DeviceKey(key="signal_strength", device_id=None): SensorValue(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                name="Signal Strength",
+                native_value=-56,
+            ),
+            DeviceKey(key="temperature", device_id=None): SensorValue(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                name="Temperature",
+                native_value=20.8,
+            ),
+            DeviceKey(key="battery", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery", device_id=None),
+                name="Battery",
+                native_value=50,
+            ),
+            DeviceKey(key="humidity", device_id=None): SensorValue(
+                device_key=DeviceKey(key="humidity", device_id=None),
+                name="Humidity",
+                native_value=20,
+            ),
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+        events={},
+    )
+    assert parser.update(TP357S_UPDATE_3) == SensorUpdate(
+        title="TP357S (C890) C890",
+        devices={
+            None: SensorDeviceInfo(
+                name="TP357S (C890)",
+                model="TP357S",
+                manufacturer="ThermoPro",
+                sw_version=None,
+                hw_version=None,
+            )
+        },
+        entity_descriptions={
+            DeviceKey(key="battery", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery", device_id=None),
+                device_class=SensorDeviceClass.BATTERY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+            ),
+            DeviceKey(key="temperature", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(key="humidity", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="humidity", device_id=None),
+                device_class=SensorDeviceClass.HUMIDITY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+        },
+        entity_values={
+            DeviceKey(key="battery", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery", device_id=None),
+                name="Battery",
+                native_value=50,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorValue(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                name="Signal Strength",
+                native_value=-65,
+            ),
+            DeviceKey(key="temperature", device_id=None): SensorValue(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                name="Temperature",
+                native_value=20.7,
+            ),
+            DeviceKey(key="humidity", device_id=None): SensorValue(
+                device_key=DeviceKey(key="humidity", device_id=None),
+                name="Humidity",
+                native_value=20,
+            ),
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+        events={},
+    )
+    assert parser.update(TP357S_UPDATE_4) == SensorUpdate(
+        title="TP357S (C890) C890",
+        devices={
+            None: SensorDeviceInfo(
+                name="TP357S (C890)",
+                model="TP357S",
+                manufacturer="ThermoPro",
+                sw_version=None,
+                hw_version=None,
+            )
+        },
+        entity_descriptions={
+            DeviceKey(key="signal_strength", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+            ),
+            DeviceKey(key="temperature", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(key="battery", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery", device_id=None),
+                device_class=SensorDeviceClass.BATTERY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+            DeviceKey(key="humidity", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="humidity", device_id=None),
+                device_class=SensorDeviceClass.HUMIDITY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+        },
+        entity_values={
+            DeviceKey(key="signal_strength", device_id=None): SensorValue(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                name="Signal Strength",
+                native_value=-55,
+            ),
+            DeviceKey(key="temperature", device_id=None): SensorValue(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                name="Temperature",
+                native_value=20.0,
+            ),
+            DeviceKey(key="battery", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery", device_id=None),
+                name="Battery",
+                native_value=50,
+            ),
+            DeviceKey(key="humidity", device_id=None): SensorValue(
+                device_key=DeviceKey(key="humidity", device_id=None),
+                name="Humidity",
+                native_value=10,
             ),
         },
         binary_entity_descriptions={},
