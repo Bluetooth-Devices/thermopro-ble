@@ -21,7 +21,10 @@ class ThermoProDevice:
     # MIT License
     # ----
     @staticmethod
-    def pack_datetime(dt: datetime, ampm: bool) -> bytes:
+    def pack_datetime(dt: datetime, am_pm: bool) -> bytes:
+        if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
+            raise ValueError("timezone aware datetime object expected")
+
         return pack(
             "BBBBBBBBBB",
             0xA5,
@@ -32,25 +35,24 @@ class ThermoProDevice:
             dt.minute,
             dt.second,
             dt.weekday() + 1,  # Monday-Sunday -> 0-6
-            int(not ampm),  # 1 means 24 hour format / 0 12 hour format
+            int(not am_pm),  # 1 means 24 hour format / 0 12 hour format
             0x5A,
         )
 
     # ----
 
-    # not covered due to complex nature of mechanism
-    async def connect(self: ThermoProDevice) -> BleakClient:
-        return await establish_connection(  # pragma: no cover
+    async def set_datetime(self: ThermoProDevice, dt: datetime, am_pm: bool) -> None:
+        if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
+            raise ValueError("timezone aware datetime object expected")
+
+        client = await establish_connection(  # pragma: no cover
             BleakClient, self.ble_device, self.ble_device.address
         )
-
-    async def set_datetime(self: ThermoProDevice, dt: datetime, ampm: bool) -> None:
-        client = await self.connect()
 
         try:
             await client.write_gatt_char(
                 ThermoProDevice.datetime_uuid,
-                ThermoProDevice.pack_datetime(dt, ampm),
+                ThermoProDevice.pack_datetime(dt, am_pm),
                 True,
             )
         finally:
