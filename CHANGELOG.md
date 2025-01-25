@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.0 (2025-01-25)
+
+### Feature
+
+* Add set_datetime service for TP358/TP393 ([#33](https://github.com/Bluetooth-Devices/thermopro-ble/issues/33)) ([`f014830`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/f014830c1b637591235b2eb744756379338d3e3d))
+
 ## v0.10.1 (2025-01-20)
 
 ### Fix
