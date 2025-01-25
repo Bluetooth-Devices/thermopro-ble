@@ -102,12 +102,6 @@ class ThermoProDeviceMock(ThermoProDevice):
         return client
 
 
-def create_send_mock() -> ThermoProDeviceMock:
-    tpd = ThermoProDeviceMock(None)
-
-    return tpd
-
-
 class ThermoProDeviceTest(IsolatedAsyncioTestCase):
     def test_can_create(self: ThermoProDeviceTest) -> None:
         ThermoProDevice(generate_ble_device("aa:bb:cc:dd:ee:ff", "TP358"))
@@ -131,7 +125,7 @@ class ThermoProDeviceTest(IsolatedAsyncioTestCase):
         )
 
     async def test_device_send_24hour(self: ThermoProDeviceTest) -> None:
-        tpd = create_send_mock()
+        tpd = ThermoProDeviceMock(None)
 
         dt = datetime.now()
 
@@ -145,7 +139,7 @@ class ThermoProDeviceTest(IsolatedAsyncioTestCase):
         tpd.client.disconnect.assert_awaited_once()
 
     async def test_device_send_12hour(self: ThermoProDeviceTest) -> None:
-        tpd = create_send_mock()
+        tpd = ThermoProDeviceMock(None)
 
         dt = datetime.now()
 
