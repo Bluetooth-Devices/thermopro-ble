@@ -93,16 +93,16 @@ PACK_TESTDATA = [
         b"\xa5\x19\x01\x18\x146\x0f\x05\x01Z",
     ),
     PackTestData(
-        "2025-01-24-20:54:15+0200-12hour",
-        datetime.fromisoformat("2025-01-24T20:54:15+02:00"),
+        "2024-03-18-10:23:46+0200-12hour",
+        datetime.fromisoformat("2024-03-18T10:23:46+02:00"),
         True,
-        b"\xa5\x19\x01\x18\x146\x0f\x05\x00Z",
+        b"\xa5\x18\x03\x12\n\x17.\x01\x00Z",
     ),
     PackTestData(
-        "2025-01-24-20:54:15+02:00-24hour",
-        datetime.fromisoformat("2025-01-24T20:54:15+02:00"),
+        "2024-03-18-10:23:46+0200-24hour",
+        datetime.fromisoformat("2024-03-18T10:23:46+02:00"),
         False,
-        b"\xa5\x19\x01\x18\x146\x0f\x05\x01Z",
+        b"\xa5\x18\x03\x12\n\x17.\x01\x01Z",
     ),
 ]
 
@@ -147,6 +147,14 @@ def test_pack_cases(pack_test: PackTestData) -> None:
         f"test '{name} failed - expected '{packed!r}' different"
         f"from computed '{result!r}'",
     )
+
+
+def test_timezone_difference():
+    assert ThermoProDevice.pack_datetime(
+        datetime.fromisoformat("2024-03-18-10:23:46+02:00"), False
+    ) != ThermoProDevice.pack_datetime(
+        datetime.fromisoformat("2024-03-18-08:23:46+00:00"), False
+    ), "timezone aware datetime must have localized time fields"
 
 
 @pytest.mark.asyncio
