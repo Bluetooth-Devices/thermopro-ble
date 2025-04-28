@@ -23,17 +23,16 @@ packages = [
 "Changelog" = "https://github.com/bluetooth-devices/thermopro-ble/blob/main/CHANGELOG.md"
 
 [tool.poetry.dependencies]
-python = "^3.10,<3.14"
-
+python = ">=3.11,<4"
+bleak = {version = ">=0.21.1", python = ">=3.10,<3.14"}
 # Documentation Dependencies
-Sphinx = {version = ">=5,<9", optional = true}
-sphinx-rtd-theme = {version = ">=1,<4", optional = true}
-myst-parser = {version = ">=0.18,<4.1", optional = true}
+Sphinx = {version = "^5.0", optional = true}
+sphinx-rtd-theme = {version = "^1.0", optional = true}
+myst-parser = {version = ">=0.18,<1.1", optional = true}
 bluetooth-sensor-state-data = ">=1.6.1"
-sensor-state-data = ">=2.3.1"
-bluetooth-data-tools = ">=0.1.2"
-bleak = ">= 0.22.3"
-bleak-retry-connector = ">=3.7.0"
+sensor-state-data = {version = ">=2.0.2", python = ">=3.11,<4"}
+bluetooth-data-tools = ">=1.28.0"
+habluetooth = {version = ">=3.42.0", python = ">=3.11,<3.14"}
 
 [tool.poetry.extras]
 docs = [
@@ -49,8 +48,8 @@ pytest-asyncio = ">0.17"
 
 [tool.semantic_release]
 branch = "main"
-version_toml = "pyproject.toml:tool.poetry.version"
-version_variable = "src/thermopro_ble/__init__.py:__version__"
+version_toml = ["pyproject.toml:tool.poetry.version"]
+version_variables = ["src/thermopro_ble/__init__.py:__version__"]
 build_command = "pip install poetry && poetry build"
 
 [tool.pytest.ini_options]
