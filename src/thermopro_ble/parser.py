@@ -1,4 +1,5 @@
-"""Parser for ThermoPro BLE advertisements.
+"""
+Parser for ThermoPro BLE advertisements.
 
 This file is shamelessly copied from the following repository:
 https://github.com/Ernst79/bleparser/blob/c42ae922e1abed2720c7fac993777e1bd59c0c93/package/bleparser/thermopro.py
@@ -12,10 +13,11 @@ import logging
 from math import tanh
 from struct import Struct
 
-from bluetooth_data_tools import short_address
+from bluetooth_data_tools import parse_advertisement_data_bytes, short_address
 from bluetooth_sensor_state_data import BluetoothData
-from home_assistant_bluetooth import BluetoothServiceInfo
 from sensor_state_data import SensorLibrary
+
+from habluetooth import BluetoothServiceInfoBleak
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -45,7 +47,7 @@ def tp96_battery(voltage: int) -> float:
 class ThermoProBluetoothDeviceData(BluetoothData):
     """Date update for ThermoPro Bluetooth devices."""
 
-    def _start_update(self, service_info: BluetoothServiceInfo) -> None:
+    def _start_update(self, service_info: BluetoothServiceInfoBleak) -> None:
         """Update from BLE advertisement data."""
         _LOGGER.debug("Parsing thermopro BLE advertisement data: %s", service_info)
         name = service_info.name
@@ -58,7 +60,14 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         self.set_device_name(name)
         self.set_precision(2)
         self.set_device_manufacturer("ThermoPro")
-        changed_manufacturer_data = self.changed_manufacturer_data(service_info)
+        if service_info.raw:
+            # If we have the raw data we don't need to work out
+            # which one is the newest.
+            _, _, _, changed_manufacturer_data, _ = parse_advertisement_data_bytes(
+                service_info.raw
+            )
+        else:
+            changed_manufacturer_data = self.changed_manufacturer_data(service_info)
 
         if not changed_manufacturer_data or len(changed_manufacturer_data) > 1:
             # If len(changed_manufacturer_data) > 1 it means we switched
