@@ -1,4 +1,7 @@
-from bluetooth_sensor_state_data import BluetoothServiceInfo, SensorUpdate
+from uuid import UUID
+
+from bluetooth_data_tools import monotonic_time_coarse
+from bluetooth_sensor_state_data import SensorUpdate
 from sensor_state_data import (
     DeviceKey,
     SensorDescription,
@@ -7,15 +10,50 @@ from sensor_state_data import (
     SensorValue,
     Units,
 )
-
 from thermopro_ble.parser import ThermoProBluetoothDeviceData
+
+from bleak.backends.device import BLEDevice
+from habluetooth import BluetoothServiceInfoBleak
+
+
+def make_bluetooth_service_info(
+    name: str,
+    manufacturer_data: dict[int, bytes],
+    service_uuids: list[str],
+    address: str,
+    rssi: int,
+    service_data: dict[UUID, bytes],
+    source: str,
+    tx_power: int = 0,
+    raw: bytes | None = None,
+) -> BluetoothServiceInfoBleak:
+    return BluetoothServiceInfoBleak(
+        name=name,
+        manufacturer_data=manufacturer_data,
+        service_uuids=service_uuids,
+        address=address,
+        rssi=rssi,
+        service_data=service_data,
+        source=source,
+        device=BLEDevice(
+            name=name,
+            address=address,
+            details={},
+            rssi=rssi,
+        ),
+        time=monotonic_time_coarse(),
+        advertisement=None,
+        connectable=True,
+        tx_power=tx_power,
+        raw=raw,
+    )
 
 
 def test_can_create():
     ThermoProBluetoothDeviceData()
 
 
-TP357 = BluetoothServiceInfo(
+TP357 = make_bluetooth_service_info(
     name="TP357 (2142)",
     manufacturer_data={61890: b"\x00\x1d\x02,"},
     service_uuids=[],
@@ -25,7 +63,19 @@ TP357 = BluetoothServiceInfo(
     source="local",
 )
 
-TP357_ADD = BluetoothServiceInfo(
+
+TP357_RAW = make_bluetooth_service_info(
+    name="TP357 (2142)",
+    manufacturer_data={1: b"\x02,"},
+    service_uuids=[],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-60,
+    service_data={},
+    source="local",
+    raw=b"\x07\xff\x82\xf1\x00\x1d\x02,",
+)
+
+TP357_ADD = make_bluetooth_service_info(
     name="TP357 (2142)",
     manufacturer_data={63938: b"\x00\x10\x02,"},
     service_uuids=[],
@@ -35,7 +85,7 @@ TP357_ADD = BluetoothServiceInfo(
     source="local",
 )
 
-TP357_S = BluetoothServiceInfo(
+TP357_S = make_bluetooth_service_info(
     name="TP357S (2142)",
     manufacturer_data={
         61122: b'\x00)"\x0b\x01',
@@ -48,7 +98,7 @@ TP357_S = BluetoothServiceInfo(
 )
 
 
-TP357_S_2 = BluetoothServiceInfo(
+TP357_S_2 = make_bluetooth_service_info(
     name="TP357S (2142)",
     manufacturer_data={
         61122: b'\x00)"\x0b\x01',
@@ -101,7 +151,7 @@ TP357_S_2 = BluetoothServiceInfo(
 )
 
 
-TP393 = BluetoothServiceInfo(
+TP393 = make_bluetooth_service_info(
     name="TP393 (9376)",
     manufacturer_data={62146: b"\x005\x02,"},
     service_uuids=[],
@@ -112,7 +162,7 @@ TP393 = BluetoothServiceInfo(
 )
 
 
-TP393_DETECT_CHANGED_1 = BluetoothServiceInfo(
+TP393_DETECT_CHANGED_1 = make_bluetooth_service_info(
     name="TP393 (9376)",
     manufacturer_data={
         194: b"\x00\x00\x00,",
@@ -139,7 +189,7 @@ TP393_DETECT_CHANGED_1 = BluetoothServiceInfo(
     source="local",
 )
 
-TP393_DETECT_CHANGED_2 = BluetoothServiceInfo(
+TP393_DETECT_CHANGED_2 = make_bluetooth_service_info(
     name="TP393 (9376)",
     manufacturer_data={
         194: b"\x00\x00\x00,",
@@ -166,7 +216,7 @@ TP393_DETECT_CHANGED_2 = BluetoothServiceInfo(
     source="local",
 )
 
-TP960R = BluetoothServiceInfo(
+TP960R = make_bluetooth_service_info(
     name="TP960R (0000)",
     manufacturer_data={14848: b"\x000\x088\x00"},
     service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
@@ -175,7 +225,7 @@ TP960R = BluetoothServiceInfo(
     service_data={},
     source="local",
 )
-TP960R_2 = BluetoothServiceInfo(
+TP960R_2 = make_bluetooth_service_info(
     name="TP960R (0000)",
     manufacturer_data={
         14848: b"\x000\x088\x00",
@@ -189,7 +239,7 @@ TP960R_2 = BluetoothServiceInfo(
     source="local",
 )
 
-TP962R = BluetoothServiceInfo(
+TP962R = make_bluetooth_service_info(
     name="TP962R (0000)",
     manufacturer_data={14081: b"\x00;\x0b7\x00"},
     service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
@@ -198,7 +248,7 @@ TP962R = BluetoothServiceInfo(
     service_data={},
     source="local",
 )
-TP962R_2 = BluetoothServiceInfo(
+TP962R_2 = make_bluetooth_service_info(
     name="TP962R (0000)",
     manufacturer_data={17152: b"\x00\x17\nC\x00", 14081: b"\x00;\x0b7\x00"},
     service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
@@ -208,7 +258,7 @@ TP962R_2 = BluetoothServiceInfo(
     source="local",
 )
 
-TP970R = BluetoothServiceInfo(
+TP970R = make_bluetooth_service_info(
     name="TP970R",
     manufacturer_data={13568: b"\x00F\x0b5\x00"},
     service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
@@ -217,7 +267,7 @@ TP970R = BluetoothServiceInfo(
     service_data={},
     source="local",
 )
-TP970R_2 = BluetoothServiceInfo(
+TP970R_2 = make_bluetooth_service_info(
     name="TP970R",
     manufacturer_data={13312: b"\x00\xae\x0b4\x00"},
     service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
@@ -226,7 +276,7 @@ TP970R_2 = BluetoothServiceInfo(
     service_data={},
     source="local",
 )
-TP357S_UPDATE_1 = BluetoothServiceInfo(
+TP357S_UPDATE_1 = make_bluetooth_service_info(
     name="TP357S (C890)",
     address="C3:18:C9:9C:C8:90",
     rssi=-57,
@@ -256,7 +306,7 @@ TP357S_UPDATE_1 = BluetoothServiceInfo(
     service_uuids=[],
     source="2C:CF:67:1B:03:3A",
 )
-TP357S_UPDATE_2 = BluetoothServiceInfo(
+TP357S_UPDATE_2 = make_bluetooth_service_info(
     name="TP357S (C890)",
     address="C3:18:C9:9C:C8:90",
     rssi=-56,
@@ -286,7 +336,7 @@ TP357S_UPDATE_2 = BluetoothServiceInfo(
     service_uuids=[],
     source="2C:CF:67:1B:03:3A",
 )
-TP357S_UPDATE_3 = BluetoothServiceInfo(
+TP357S_UPDATE_3 = make_bluetooth_service_info(
     name="TP357S (C890)",
     address="C3:18:C9:9C:C8:90",
     rssi=-65,
@@ -317,7 +367,7 @@ TP357S_UPDATE_3 = BluetoothServiceInfo(
     service_uuids=[],
     source="2C:CF:67:1B:03:3A",
 )
-TP357S_UPDATE_4 = BluetoothServiceInfo(
+TP357S_UPDATE_4 = make_bluetooth_service_info(
     name="TP357S (C890)",
     address="C3:18:C9:9C:C8:90",
     rssi=-55,
@@ -352,13 +402,75 @@ TP357S_UPDATE_4 = BluetoothServiceInfo(
 
 def test_supported_set_the_title():
     parser = ThermoProBluetoothDeviceData()
-    parser.supported(TP357) is True
+    assert parser.supported(TP357) is True
     assert parser.title == "TP357 (2142) EEFF"
 
 
 def test_tp357():
     parser = ThermoProBluetoothDeviceData()
     assert parser.update(TP357) == SensorUpdate(
+        title="TP357 (2142) EEFF",
+        devices={
+            None: SensorDeviceInfo(
+                name="TP357 (2142)",
+                model="TP357",
+                manufacturer="ThermoPro",
+                sw_version=None,
+                hw_version=None,
+            )
+        },
+        entity_descriptions={
+            DeviceKey(key="temperature", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(key="humidity", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="humidity", device_id=None),
+                device_class=SensorDeviceClass.HUMIDITY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+            ),
+            DeviceKey(key="battery", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery", device_id=None),
+                device_class=SensorDeviceClass.BATTERY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+        },
+        entity_values={
+            DeviceKey(key="temperature", device_id=None): SensorValue(
+                device_key=DeviceKey(key="temperature", device_id=None),
+                name="Temperature",
+                native_value=24.1,
+            ),
+            DeviceKey(key="humidity", device_id=None): SensorValue(
+                device_key=DeviceKey(key="humidity", device_id=None),
+                name="Humidity",
+                native_value=29,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorValue(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                name="Signal Strength",
+                native_value=-60,
+            ),
+            DeviceKey(key="battery", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery", device_id=None),
+                name="Battery",
+                native_value=100,
+            ),
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+    )
+
+
+def test_tp357_raw():
+    parser = ThermoProBluetoothDeviceData()
+    assert parser.update(TP357_RAW) == SensorUpdate(
         title="TP357 (2142) EEFF",
         devices={
             None: SensorDeviceInfo(
