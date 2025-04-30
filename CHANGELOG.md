@@ -1,6 +1,41 @@
 # CHANGELOG
 
 
+## v0.13.0 (2025-04-30)
+
+### Chores
+
+- **deps**: Bump bluetooth-data-tools from 1.28.0 to 1.28.1
+  ([#92](https://github.com/Bluetooth-Devices/thermopro-ble/pull/92),
+  [`8252438`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/8252438d5473374c5fea4da0e8855c33cd881a01))
+
+- **deps**: Bump habluetooth from 3.42.0 to 3.44.0
+  ([#91](https://github.com/Bluetooth-Devices/thermopro-ble/pull/91),
+  [`ad275d2`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/ad275d20aa58f2fb82d3f3df8b1cc021a23364ce))
+
+- **deps**: Bump sphinx from 5.3.0 to 6.2.1
+  ([#93](https://github.com/Bluetooth-Devices/thermopro-ble/pull/93),
+  [`658576a`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/658576ac236763d892629ced2682eb6cb87f2c95))
+
+- **deps**: Bump sphinx-rtd-theme from 1.3.0 to 2.0.0
+  ([#90](https://github.com/Bluetooth-Devices/thermopro-ble/pull/90),
+  [`99f4e22`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/99f4e22386f8d5a7e64c8a14eba8c7d3ffde1937))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#94](https://github.com/Bluetooth-Devices/thermopro-ble/pull/94),
+  [`4977235`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/49772357985a23455c59975c096e6c5b387c002a))
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+
+### Features
+
+- Use changed_manufacturer_data from newer bluetooth-sensor-state-data
+  ([#95](https://github.com/Bluetooth-Devices/thermopro-ble/pull/95),
+  [`1f7cecd`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/1f7cecdffdb76bf564e003903cf0cb75b25dc27c))
+
+
 ## v0.12.0 (2025-04-28)
 
 ### Chores
