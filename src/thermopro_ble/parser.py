@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import logging
 from math import tanh
-from struct import Struct
+from struct import Struct, error as struct_error
 
 from bluetooth_data_tools import short_address
 from bluetooth_sensor_state_data import BluetoothData
@@ -80,12 +80,17 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         if name.startswith(("TP96", "TP97")):
             # TP96 has a different format
             # It has an internal temp probe and an ambient temp probe
-            (
-                probe_zero_indexed,
-                internal_temp,
-                battery_voltage,
-                ambient_temp,
-            ) = UNPACK_SPIKE_TEMP(data)
+            try:
+                (
+                    probe_zero_indexed,
+                    internal_temp,
+                    battery_voltage,
+                    ambient_temp,
+                ) = UNPACK_SPIKE_TEMP(data)
+            except struct_error:
+                _LOGGER.error("Error parsing data from probe: %s", data)
+                return
+
             probe_one_indexed = probe_zero_indexed + 1
             internal_temp = internal_temp - 30
             ambient_temp = ambient_temp - 30
