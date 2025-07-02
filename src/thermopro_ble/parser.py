@@ -88,7 +88,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
                     ambient_temp,
                 ) = UNPACK_SPIKE_TEMP(data)
             except struct_error:
-                _LOGGER.error(f"Error parsing data from probe: {data}")
+                _LOGGER.error("Error parsing data from probe: %s", data)
                 return
 
             probe_one_indexed = probe_zero_indexed + 1
