@@ -1,6 +1,53 @@
 # CHANGELOG
 
 
+## v0.13.1 (2025-07-02)
+
+### Bug Fixes
+
+- **parser**: Handle struct unpacking errors gracefully
+  ([#111](https://github.com/Bluetooth-Devices/thermopro-ble/pull/111),
+  [`4253e5d`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/4253e5dfd7341dfd97ee23d412c0c18514103fcb))
+
+### Chores
+
+- **deps**: Bump habluetooth from 3.45.0 to 3.48.2
+  ([#96](https://github.com/Bluetooth-Devices/thermopro-ble/pull/96),
+  [`c6b7db3`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/c6b7db3f4ce93a2b760ffd51f631ce9b3f14f1e5))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **deps**: Bump myst-parser from 1.0.0 to 3.0.1
+  ([#97](https://github.com/Bluetooth-Devices/thermopro-ble/pull/97),
+  [`25fbeab`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/25fbeab81db7365d416e0dfc06e947780c1d5315))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **deps**: Bump myst-parser from 3.0.1 to 4.0.1
+  ([#100](https://github.com/Bluetooth-Devices/thermopro-ble/pull/100),
+  [`6171cca`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/6171cca9eb6f33196b20fdf10ef2fb45cf4085d9))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **deps**: Bump sphinx from 6.2.1 to 7.4.7
+  ([#99](https://github.com/Bluetooth-Devices/thermopro-ble/pull/99),
+  [`d628958`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/d628958d8625ac09d2a5e5f835cb77cf1802037b))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **deps**: Bump sphinx from 7.4.7 to 8.2.3
+  ([#102](https://github.com/Bluetooth-Devices/thermopro-ble/pull/102),
+  [`c0126a8`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/c0126a85647ed8be1e207039a5ffc3a80e272a5c))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#98](https://github.com/Bluetooth-Devices/thermopro-ble/pull/98),
+  [`904a112`](https://github.com/Bluetooth-Devices/thermopro-ble/commit/904a1120e6c9a7a55c367a927cfe15fb6a22390f))
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+
+
 ## v0.13.0 (2025-04-30)
 
 ### Chores
