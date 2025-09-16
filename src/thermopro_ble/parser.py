@@ -30,6 +30,7 @@ BATTERY_VALUE_TO_LEVEL = {
 
 UNPACK_TEMP_HUMID = Struct("<hB").unpack
 UNPACK_SPIKE_TEMP = Struct("<BHHH").unpack
+UNPACK_SPIKE_PRO_TEMP = Struct("<BHHfffHHH").unpack
 
 
 # TP96x battery values appear to be a voltage reading, probably in millivolts.
@@ -46,6 +47,27 @@ def tp96_battery(voltage: int) -> float:
 
 class ThermoProBluetoothDeviceData(BluetoothData):
     """Date update for ThermoPro Bluetooth devices."""
+
+    def _update_sensors(self, probe_one_indexed, internal_temp, ambient_temp, battery_percent):
+        self.update_predefined_sensor(
+            SensorLibrary.TEMPERATURE__CELSIUS,
+            internal_temp,
+            key=f"internal_temperature_probe_{probe_one_indexed}",
+            name=f"Probe {probe_one_indexed} Internal Temperature",
+        )
+        self.update_predefined_sensor(
+            SensorLibrary.TEMPERATURE__CELSIUS,
+            ambient_temp,
+            key=f"ambient_temperature_probe_{probe_one_indexed}",
+            name=f"Probe {probe_one_indexed} Ambient Temperature",
+        )
+        self.set_precision(0)
+        self.update_predefined_sensor(
+            SensorLibrary.BATTERY__PERCENTAGE,
+            battery_percent,
+            key=f"battery_probe_{probe_one_indexed}",
+            name=f"Probe {probe_one_indexed} Battery",
+        )
 
     def _start_update(self, service_info: BluetoothServiceInfoBleak) -> None:
         """Update from BLE advertisement data."""
@@ -74,11 +96,34 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             + changed_manufacturer_data[last_id]
         )
 
-        if len(data) < 6:
+        data_length = len(data)
+
+        if data_length == 23 and name.startswith(("TP97")):
+            # TP972 has a 23-byte format
+            # It has an internal temp probe and an ambient temp probe
+            try:
+                (
+                    probe_zero_indexed,
+                    ambient_temp,
+                    battery_voltage,
+                    _, # looks to be part of some temp range (min)
+                    internal_temp,
+                    _, # looks to be part of some temp range (max)
+                    _, _, _ # looks like a static id
+                ) = UNPACK_SPIKE_PRO_TEMP(data)
+            except struct_error as ex:
+                _LOGGER.error("Error parsing data from probe: %s", data)
+                return
+
+            probe_one_indexed = probe_zero_indexed + 1
+            internal_temp = int(internal_temp) - 54
+            ambient_temp = int(ambient_temp) - 54
+            battery_percent = tp96_battery(battery_voltage)
+            self._update_sensors(probe_one_indexed, internal_temp, ambient_temp, battery_percent)
             return
 
-        if name.startswith(("TP96", "TP97")):
-            # TP96 has a different format
+        if data_length == 7 and name.startswith(("TP96", "TP97")):
+            # TP96 has a different format that is shared with TP970
             # It has an internal temp probe and an ambient temp probe
             try:
                 (
@@ -95,29 +140,14 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             internal_temp = internal_temp - 30
             ambient_temp = ambient_temp - 30
             battery_percent = tp96_battery(battery_voltage)
-            self.update_predefined_sensor(
-                SensorLibrary.TEMPERATURE__CELSIUS,
-                internal_temp,
-                key=f"internal_temperature_probe_{probe_one_indexed}",
-                name=f"Probe {probe_one_indexed} Internal Temperature",
-            )
-            self.update_predefined_sensor(
-                SensorLibrary.TEMPERATURE__CELSIUS,
-                ambient_temp,
-                key=f"ambient_temperature_probe_{probe_one_indexed}",
-                name=f"Probe {probe_one_indexed} Ambient Temperature",
-            )
-            self.set_precision(0)
-            self.update_predefined_sensor(
-                SensorLibrary.BATTERY__PERCENTAGE,
-                battery_percent,
-                key=f"battery_probe_{probe_one_indexed}",
-                name=f"Probe {probe_one_indexed} Battery",
-            )
+            self._update_sensors(probe_one_indexed, internal_temp, ambient_temp, battery_percent)
+            return
+
+        if data_length < 6:
             return
 
         # TP357S seems to be in 6, TP397 and TP393 in 4
-        battery_byte = data[6] if len(data) == 7 else data[4]
+        battery_byte = data[6] if data_length == 7 else data[4]
         if battery_byte in BATTERY_VALUE_TO_LEVEL:
             self.update_predefined_sensor(
                 SensorLibrary.BATTERY__PERCENTAGE,
