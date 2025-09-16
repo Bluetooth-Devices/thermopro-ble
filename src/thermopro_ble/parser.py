@@ -17,7 +17,7 @@ from bluetooth_data_tools import short_address
 from bluetooth_sensor_state_data import BluetoothData
 from sensor_state_data import SensorLibrary
 
-from habluetooth import BluetoothServiceInfoBleak
+from habluetooth import BluetoothServiceInfo, BluetoothServiceInfoBleak
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -75,7 +75,9 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             name=f"Probe {probe_one_indexed} Battery",
         )
 
-    def _start_update(self, service_info: BluetoothServiceInfoBleak) -> None:
+    def _start_update(
+        self, service_info: BluetoothServiceInfo | BluetoothServiceInfoBleak
+    ) -> None:
         """Update from BLE advertisement data."""
         _LOGGER.debug("Parsing thermopro BLE advertisement data: %s", service_info)
         name = service_info.name
