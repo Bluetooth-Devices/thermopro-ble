@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from bleak.backends.device import BLEDevice
 from bluetooth_data_tools import monotonic_time_coarse
 from bluetooth_sensor_state_data import SensorUpdate
 from sensor_state_data import (
@@ -12,7 +13,6 @@ from sensor_state_data import (
 )
 from thermopro_ble.parser import ThermoProBluetoothDeviceData
 
-from bleak.backends.device import BLEDevice
 from habluetooth import BluetoothServiceInfoBleak
 
 
@@ -1303,7 +1303,7 @@ def test_tp970r():
     )
 
 
-def test_tp972s():
+def test_tp972s() -> None:
     parser = ThermoProBluetoothDeviceData()
     assert parser.update(TP972S) == SensorUpdate(
         title="TP972S EEFF",
@@ -1653,7 +1653,7 @@ def test_tp357s_four_updates():
     )
 
 
-def test_parser_error_1():
+def test_parser_error_1() -> None:
     parser = ThermoProBluetoothDeviceData()
     assert parser.update(INVALID_TP972) == SensorUpdate(
         title="TP972S C890",
@@ -1686,7 +1686,7 @@ def test_parser_error_1():
     )
 
 
-def test_parser_error_2():
+def test_parser_error_2() -> None:
     parser = ThermoProBluetoothDeviceData()
     assert parser.update(INVALID_DEVICE) == SensorUpdate(
         title=None,
