@@ -288,7 +288,7 @@ TP972S = make_bluetooth_service_info(
 )
 TP972S_2 = make_bluetooth_service_info(
     name="TP972S",
-    manufacturer_data={36096: b'\x00\xa6\n\xcd\xec\xffB\x9ai\x00C\x9ai\x00ClTswD\xf8'},
+    manufacturer_data={36096: b"\x00\xa6\n\xcd\xec\xffB\x9ai\x00C\x9ai\x00ClTswD\xf8"},
     service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
     address="aa:bb:cc:dd:ee:ff",
     rssi=-75,
