@@ -49,7 +49,11 @@ class ThermoProBluetoothDeviceData(BluetoothData):
     """Date update for ThermoPro Bluetooth devices."""
 
     def _update_sensors(
-        self, probe_one_indexed: int, internal_temp: int, ambient_temp: int, battery_percent: float
+        self,
+        probe_one_indexed: int,
+        internal_temp: int,
+        ambient_temp: int,
+        battery_percent: float,
     ) -> None:
         self.update_predefined_sensor(
             SensorLibrary.TEMPERATURE__CELSIUS,
