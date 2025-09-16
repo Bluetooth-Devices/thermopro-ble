@@ -48,7 +48,9 @@ def tp96_battery(voltage: int) -> float:
 class ThermoProBluetoothDeviceData(BluetoothData):
     """Date update for ThermoPro Bluetooth devices."""
 
-    def _update_sensors(self, probe_one_indexed, internal_temp, ambient_temp, battery_percent) -> None:
+    def _update_sensors(
+        self, probe_one_indexed, internal_temp, ambient_temp, battery_percent
+    ) -> None:
         self.update_predefined_sensor(
             SensorLibrary.TEMPERATURE__CELSIUS,
             internal_temp,
