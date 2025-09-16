@@ -276,6 +276,26 @@ TP970R_2 = make_bluetooth_service_info(
     service_data={},
     source="local",
 )
+
+TP972S = make_bluetooth_service_info(
+    name="TP972S",
+    manufacturer_data={29184: b"\x00j\n3\xd3\xb8B\x00@\xaeBf\x06\xaeBlTswD\xf8"},
+    service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-75,
+    service_data={},
+    source="local",
+)
+TP972S_2 = make_bluetooth_service_info(
+    name="TP972S",
+    manufacturer_data={36096: b'\x00\xa6\n\xcd\xec\xffB\x9ai\x00C\x9ai\x00ClTswD\xf8'},
+    service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-75,
+    service_data={},
+    source="local",
+)
+
 TP357S_UPDATE_1 = make_bluetooth_service_info(
     name="TP357S (C890)",
     address="C3:18:C9:9C:C8:90",
@@ -393,6 +413,31 @@ TP357S_UPDATE_4 = make_bluetooth_service_info(
         54722: b'\x00\x14"\x0b\x01',
         54978: b'\x00\x14"\x0b\x01',
         53186: b'\x00\x14"\x0b\x01',
+    },
+    service_data={},
+    service_uuids=[],
+    source="2C:CF:67:1B:03:3A",
+)
+
+INVALID_TP972 = make_bluetooth_service_info(
+    name="TP972S",
+    address="C3:18:C9:9C:C8:90",
+    rssi=-55,
+    manufacturer_data={
+        51138: b'\x01\x8d\x00\xe1\n3\x13\xfaB\x00\xc0\xfaB\x9a\xf9\xfaBlTswD\xf8'
+    },
+    service_data={},
+    service_uuids=[],
+    source="2C:CF:67:1B:03:3A",
+)
+
+# Nonexistent (at time of writing) device
+INVALID_DEVICE = make_bluetooth_service_info(
+    name="TP9000NOTHING",
+    address="C3:18:C9:9C:C8:90",
+    rssi=-55,
+    manufacturer_data={
+        51138: b'\x01\x8d\x00\xe1\n3\x13\xfaB\x00\xc0\xfaB\x9a\xf9\xfaBlTswD\xf8'
     },
     service_data={},
     service_uuids=[],
@@ -1258,6 +1303,144 @@ def test_tp970r():
     )
 
 
+def test_tp972s():
+    parser = ThermoProBluetoothDeviceData()
+    assert parser.update(TP972S) == SensorUpdate(
+        title="TP972S EEFF",
+        devices={
+            None: SensorDeviceInfo(
+                name="TP972S",
+                model="TP972S",
+                manufacturer="ThermoPro",
+                sw_version=None,
+                hw_version=None,
+            )
+        },
+        entity_descriptions={
+            DeviceKey(key="battery_probe_1", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery_probe_1", device_id=None),
+                device_class=SensorDeviceClass.BATTERY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+            ),
+            DeviceKey(
+                key="internal_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(
+                    key="internal_temperature_probe_1", device_id=None
+                ),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(
+                key="ambient_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+        },
+        entity_values={
+            DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery_probe_1", device_id=None),
+                name="Probe 1 Battery",
+                native_value=90.0,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorValue(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                name="Signal Strength",
+                native_value=-75,
+            ),
+            DeviceKey(key="internal_temperature_probe_1", device_id=None): SensorValue(
+                device_key=DeviceKey(
+                    key="internal_temperature_probe_1", device_id=None
+                ),
+                name="Probe 1 Internal Temperature",
+                native_value=33,
+            ),
+            DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
+                device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
+                name="Probe 1 Ambient Temperature",
+                native_value=60,
+            ),
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+        events={},
+    )
+    assert parser.update(TP972S_2) == SensorUpdate(
+        title="TP972S EEFF",
+        devices={
+            None: SensorDeviceInfo(
+                name="TP972S",
+                model="TP972S",
+                manufacturer="ThermoPro",
+                sw_version=None,
+                hw_version=None,
+            )
+        },
+        entity_descriptions={
+            DeviceKey(key="battery_probe_1", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery_probe_1", device_id=None),
+                device_class=SensorDeviceClass.BATTERY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+            ),
+            DeviceKey(
+                key="internal_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(
+                    key="internal_temperature_probe_1", device_id=None
+                ),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(
+                key="ambient_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+        },
+        entity_values={
+            DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery_probe_1", device_id=None),
+                name="Probe 1 Battery",
+                native_value=95.0,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorValue(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                name="Signal Strength",
+                native_value=-75,
+            ),
+            DeviceKey(key="internal_temperature_probe_1", device_id=None): SensorValue(
+                device_key=DeviceKey(
+                    key="internal_temperature_probe_1", device_id=None
+                ),
+                name="Probe 1 Internal Temperature",
+                native_value=74,
+            ),
+            DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
+                device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
+                name="Probe 1 Ambient Temperature",
+                native_value=87,
+            ),
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+        events={},
+    )
+
+
 def test_tp357s_four_updates():
     parser = ThermoProBluetoothDeviceData()
 
@@ -1463,6 +1646,55 @@ def test_tp357s_four_updates():
                 name="Humidity",
                 native_value=10,
             ),
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+        events={},
+    )
+
+
+def test_parser_error_1():
+    parser = ThermoProBluetoothDeviceData()
+    assert parser.update(INVALID_TP972) == SensorUpdate(
+        title="TP972S C890",
+        devices={
+            None: SensorDeviceInfo(
+                name="TP972S",
+                model="TP972S",
+                manufacturer="ThermoPro",
+                sw_version=None,
+                hw_version=None,
+            )
+        },
+        entity_descriptions={
+            DeviceKey(key="signal_strength", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+            ),
+        },
+        entity_values={
+            DeviceKey(key="signal_strength", device_id=None): SensorValue(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                name="Signal Strength",
+                native_value=-55,
+            ),
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+        events={},
+    )
+
+
+def test_parser_error_2():
+    parser = ThermoProBluetoothDeviceData()
+    assert parser.update(INVALID_DEVICE) == SensorUpdate(
+        title=None,
+        devices={
+        },
+        entity_descriptions={
+        },
+        entity_values={
         },
         binary_entity_descriptions={},
         binary_entity_values={},
