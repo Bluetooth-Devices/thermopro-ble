@@ -288,7 +288,7 @@ TP972S = make_bluetooth_service_info(
 )
 TP972S_2 = make_bluetooth_service_info(
     name="TP972S",
-    manufacturer_data={36096: b'\x00\xa6\n\xcd\xec\xffB\x9ai\x00C\x9ai\x00ClTswD\xf8'},
+    manufacturer_data={36096: b"\x00\xa6\n\xcd\xec\xffB\x9ai\x00C\x9ai\x00ClTswD\xf8"},
     service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
     address="aa:bb:cc:dd:ee:ff",
     rssi=-75,
@@ -424,7 +424,7 @@ INVALID_TP972 = make_bluetooth_service_info(
     address="C3:18:C9:9C:C8:90",
     rssi=-55,
     manufacturer_data={
-        51138: b'\x01\x8d\x00\xe1\n3\x13\xfaB\x00\xc0\xfaB\x9a\xf9\xfaBlTswD\xf8'
+        51138: b"\x01\x8d\x00\xe1\n3\x13\xfaB\x00\xc0\xfaB\x9a\xf9\xfaBlTswD\xf8"
     },
     service_data={},
     service_uuids=[],
@@ -437,7 +437,7 @@ INVALID_DEVICE = make_bluetooth_service_info(
     address="C3:18:C9:9C:C8:90",
     rssi=-55,
     manufacturer_data={
-        51138: b'\x01\x8d\x00\xe1\n3\x13\xfaB\x00\xc0\xfaB\x9a\xf9\xfaBlTswD\xf8'
+        51138: b"\x01\x8d\x00\xe1\n3\x13\xfaB\x00\xc0\xfaB\x9a\xf9\xfaBlTswD\xf8"
     },
     service_data={},
     service_uuids=[],
@@ -1690,12 +1690,9 @@ def test_parser_error_2():
     parser = ThermoProBluetoothDeviceData()
     assert parser.update(INVALID_DEVICE) == SensorUpdate(
         title=None,
-        devices={
-        },
-        entity_descriptions={
-        },
-        entity_values={
-        },
+        devices={},
+        entity_descriptions={},
+        entity_values={},
         binary_entity_descriptions={},
         binary_entity_values={},
         events={},

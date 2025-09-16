@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import logging
 from math import tanh
-from struct import Struct, error as struct_error
+from struct import Struct
 
 from bluetooth_data_tools import short_address
 from bluetooth_sensor_state_data import BluetoothData
@@ -48,7 +48,9 @@ def tp96_battery(voltage: int) -> float:
 class ThermoProBluetoothDeviceData(BluetoothData):
     """Date update for ThermoPro Bluetooth devices."""
 
-    def _update_sensors(self, probe_one_indexed, internal_temp, ambient_temp, battery_percent):
+    def _update_sensors(
+        self, probe_one_indexed, internal_temp, ambient_temp, battery_percent
+    ):
         self.update_predefined_sensor(
             SensorLibrary.TEMPERATURE__CELSIUS,
             internal_temp,
@@ -98,24 +100,28 @@ class ThermoProBluetoothDeviceData(BluetoothData):
 
         data_length = len(data)
 
-        if data_length == 23 and name.startswith(("TP97")):
+        if data_length == 23 and name.startswith("TP97"):
             # TP972 has a 23-byte format
             # It has an internal temp probe and an ambient temp probe
             (
                 probe_zero_indexed,
                 ambient_temp,
                 battery_voltage,
-                _, # looks to be part of some temp range (min)
+                _,  # looks to be part of some temp range (min)
                 internal_temp,
-                _, # looks to be part of some temp range (max)
-                _, _, _ # looks like a static id
+                _,  # looks to be part of some temp range (max)
+                _,
+                _,
+                _,  # looks like a static id
             ) = UNPACK_SPIKE_PRO_TEMP(data)
 
             probe_one_indexed = probe_zero_indexed + 1
             internal_temp = int(internal_temp) - 54
             ambient_temp = int(ambient_temp) - 54
             battery_percent = tp96_battery(battery_voltage)
-            self._update_sensors(probe_one_indexed, internal_temp, ambient_temp, battery_percent)
+            self._update_sensors(
+                probe_one_indexed, internal_temp, ambient_temp, battery_percent
+            )
             return
 
         if data_length == 7 and name.startswith(("TP96", "TP97")):
@@ -132,7 +138,9 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             internal_temp = internal_temp - 30
             ambient_temp = ambient_temp - 30
             battery_percent = tp96_battery(battery_voltage)
-            self._update_sensors(probe_one_indexed, internal_temp, ambient_temp, battery_percent)
+            self._update_sensors(
+                probe_one_indexed, internal_temp, ambient_temp, battery_percent
+            )
             return
 
         # TP357S seems to be in 6, TP397 and TP393 in 4
