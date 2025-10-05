@@ -1,6 +1,5 @@
 from uuid import UUID
 
-from bleak.backends.device import BLEDevice
 from bluetooth_data_tools import monotonic_time_coarse
 from bluetooth_sensor_state_data import SensorUpdate
 from sensor_state_data import (
@@ -13,6 +12,7 @@ from sensor_state_data import (
 )
 from thermopro_ble.parser import ThermoProBluetoothDeviceData
 
+from bleak.backends.device import BLEDevice
 from habluetooth import BluetoothServiceInfoBleak
 
 
@@ -1303,7 +1303,7 @@ def test_tp970r():
     )
 
 
-def test_tp972s() -> None:
+def test_tp972s():
     parser = ThermoProBluetoothDeviceData()
     assert parser.update(TP972S) == SensorUpdate(
         title="TP972S EEFF",
@@ -1328,10 +1328,28 @@ def test_tp972s() -> None:
                 native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
             ),
             DeviceKey(
-                key="internal_temperature_probe_1", device_id=None
+                key="internal_tip_temperature_probe_1", device_id=None
             ): SensorDescription(
                 device_key=DeviceKey(
-                    key="internal_temperature_probe_1", device_id=None
+                    key="internal_tip_temperature_probe_1", device_id=None
+                ),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(
+                key="internal_center_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(
+                    key="internal_center_temperature_probe_1", device_id=None
+                ),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(
+                key="internal_end_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(
+                    key="internal_end_temperature_probe_1", device_id=None
                 ),
                 device_class=SensorDeviceClass.TEMPERATURE,
                 native_unit_of_measurement=Units.TEMP_CELSIUS,
@@ -1355,17 +1373,37 @@ def test_tp972s() -> None:
                 name="Signal Strength",
                 native_value=-75,
             ),
-            DeviceKey(key="internal_temperature_probe_1", device_id=None): SensorValue(
+            DeviceKey(
+                key="internal_tip_temperature_probe_1", device_id=None
+            ): SensorValue(
                 device_key=DeviceKey(
-                    key="internal_temperature_probe_1", device_id=None
+                    key="internal_tip_temperature_probe_1", device_id=None
                 ),
-                name="Probe 1 Internal Temperature",
-                native_value=33,
+                name="Probe 1 Internal Tip Temperature",
+                native_value=3.6,
+            ),
+            DeviceKey(
+                key="internal_center_temperature_probe_1", device_id=None
+            ): SensorValue(
+                device_key=DeviceKey(
+                    key="internal_center_temperature_probe_1", device_id=None
+                ),
+                name="Probe 1 Internal Center Temperature",
+                native_value=0.6,
+            ),
+            DeviceKey(
+                key="internal_end_temperature_probe_1", device_id=None
+            ): SensorValue(
+                device_key=DeviceKey(
+                    key="internal_end_temperature_probe_1", device_id=None
+                ),
+                name="Probe 1 Internal End Temperature",
+                native_value=0.6,
             ),
             DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
                 name="Probe 1 Ambient Temperature",
-                native_value=60,
+                native_value=15,
             ),
         },
         binary_entity_descriptions={},
@@ -1395,10 +1433,28 @@ def test_tp972s() -> None:
                 native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
             ),
             DeviceKey(
-                key="internal_temperature_probe_1", device_id=None
+                key="internal_tip_temperature_probe_1", device_id=None
             ): SensorDescription(
                 device_key=DeviceKey(
-                    key="internal_temperature_probe_1", device_id=None
+                    key="internal_tip_temperature_probe_1", device_id=None
+                ),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(
+                key="internal_center_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(
+                    key="internal_center_temperature_probe_1", device_id=None
+                ),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(
+                key="internal_end_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(
+                    key="internal_end_temperature_probe_1", device_id=None
                 ),
                 device_class=SensorDeviceClass.TEMPERATURE,
                 native_unit_of_measurement=Units.TEMP_CELSIUS,
@@ -1422,17 +1478,37 @@ def test_tp972s() -> None:
                 name="Signal Strength",
                 native_value=-75,
             ),
-            DeviceKey(key="internal_temperature_probe_1", device_id=None): SensorValue(
+            DeviceKey(
+                key="internal_tip_temperature_probe_1", device_id=None
+            ): SensorValue(
                 device_key=DeviceKey(
-                    key="internal_temperature_probe_1", device_id=None
+                    key="internal_tip_temperature_probe_1", device_id=None
                 ),
-                name="Probe 1 Internal Temperature",
-                native_value=74,
+                name="Probe 1 Internal Tip Temperature",
+                native_value=23.3,
+            ),
+            DeviceKey(
+                key="internal_center_temperature_probe_1", device_id=None
+            ): SensorValue(
+                device_key=DeviceKey(
+                    key="internal_center_temperature_probe_1", device_id=None
+                ),
+                name="Probe 1 Internal Center Temperature",
+                native_value=23.6,
+            ),
+            DeviceKey(
+                key="internal_end_temperature_probe_1", device_id=None
+            ): SensorValue(
+                device_key=DeviceKey(
+                    key="internal_end_temperature_probe_1", device_id=None
+                ),
+                name="Probe 1 Internal End Temperature",
+                native_value=23.6,
             ),
             DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
                 name="Probe 1 Ambient Temperature",
-                native_value=87,
+                native_value=30.0,
             ),
         },
         binary_entity_descriptions={},
@@ -1653,7 +1729,7 @@ def test_tp357s_four_updates():
     )
 
 
-def test_parser_error_1() -> None:
+def test_parser_error_1():
     parser = ThermoProBluetoothDeviceData()
     assert parser.update(INVALID_TP972) == SensorUpdate(
         title="TP972S C890",
@@ -1686,7 +1762,7 @@ def test_parser_error_1() -> None:
     )
 
 
-def test_parser_error_2() -> None:
+def test_parser_error_2():
     parser = ThermoProBluetoothDeviceData()
     assert parser.update(INVALID_DEVICE) == SensorUpdate(
         title=None,
