@@ -17,7 +17,7 @@ from bluetooth_data_tools import short_address
 from bluetooth_sensor_state_data import BluetoothData
 from sensor_state_data import SensorLibrary
 
-from habluetooth import BluetoothServiceInfo, BluetoothServiceInfoBleak
+from habluetooth import BluetoothServiceInfoBleak
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -43,6 +43,12 @@ def tp96_battery(voltage: int) -> float:
     raw = 52.317286 * tanh(voltage / 273.624277936 - 8.76485439394) + 51.06925
     clamped = max(0, min(raw, 100))
     return round(clamped, 2)
+
+
+# TP97x only supply temperatures in F, even when display is set to celsius
+def fahrenheit_to_celsius(fahrenheit_temp: float) -> float:
+    celsius_temp = (fahrenheit_temp - 32) * 5 / 9
+    return celsius_temp
 
 
 class ThermoProBluetoothDeviceData(BluetoothData):
@@ -75,9 +81,49 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             name=f"Probe {probe_one_indexed} Battery",
         )
 
-    def _start_update(
-        self, service_info: BluetoothServiceInfo | BluetoothServiceInfoBleak
+    def _update_sensors_tp97(
+        self,
+        probe_one_indexed: int,
+        internal_temp_tip: float,
+        internal_temp_center: float,
+        internal_temp_end: float,
+        ambient_temp: int,
+        battery_percent: float,
     ) -> None:
+        self.set_precision(1)
+        self.update_predefined_sensor(
+            SensorLibrary.TEMPERATURE__CELSIUS,
+            internal_temp_tip,
+            key=f"internal_tip_temperature_probe_{probe_one_indexed}",
+            name=f"Probe {probe_one_indexed} Internal Tip Temperature",
+        )
+        self.update_predefined_sensor(
+            SensorLibrary.TEMPERATURE__CELSIUS,
+            internal_temp_center,
+            key=f"internal_center_temperature_probe_{probe_one_indexed}",
+            name=f"Probe {probe_one_indexed} Internal Center Temperature",
+        )
+        self.update_predefined_sensor(
+            SensorLibrary.TEMPERATURE__CELSIUS,
+            internal_temp_end,
+            key=f"internal_end_temperature_probe_{probe_one_indexed}",
+            name=f"Probe {probe_one_indexed} Internal End Temperature",
+        )
+        self.update_predefined_sensor(
+            SensorLibrary.TEMPERATURE__CELSIUS,
+            ambient_temp,
+            key=f"ambient_temperature_probe_{probe_one_indexed}",
+            name=f"Probe {probe_one_indexed} Ambient Temperature",
+        )
+        self.set_precision(0)
+        self.update_predefined_sensor(
+            SensorLibrary.BATTERY__PERCENTAGE,
+            battery_percent,
+            key=f"battery_probe_{probe_one_indexed}",
+            name=f"Probe {probe_one_indexed} Battery",
+        )
+
+    def _start_update(self, service_info: BluetoothServiceInfoBleak) -> None:
         """Update from BLE advertisement data."""
         _LOGGER.debug("Parsing thermopro BLE advertisement data: %s", service_info)
         name = service_info.name
@@ -113,20 +159,27 @@ class ThermoProBluetoothDeviceData(BluetoothData):
                 probe_zero_indexed,
                 ambient_temp,
                 battery_voltage,
-                _,  # looks to be part of some temp range (min)
-                internal_temp,
-                _,  # looks to be part of some temp range (max)
-                _,
-                _,
+                internal_tip_temp,  # tip temperature
+                internal_center_temp,  # center temperature
+                internal_end_temp,  # end temperature
                 _,  # looks like a static id
+                _,
+                _,
             ) = UNPACK_SPIKE_PRO_TEMP(data)
 
             probe_one_indexed = probe_zero_indexed + 1
-            internal_temp = int(internal_temp) - 54
-            ambient_temp = int(ambient_temp) - 54
+            internal_tip_temp = fahrenheit_to_celsius(internal_tip_temp - 54)
+            internal_center_temp = fahrenheit_to_celsius(internal_center_temp - 54)
+            internal_end_temp = fahrenheit_to_celsius(internal_end_temp - 54)
+            ambient_temp = int(fahrenheit_to_celsius(ambient_temp - 54))
             battery_percent = tp96_battery(battery_voltage)
-            self._update_sensors(
-                probe_one_indexed, internal_temp, ambient_temp, battery_percent
+            self._update_sensors_tp97(
+                probe_one_indexed,
+                internal_tip_temp,
+                internal_center_temp,
+                internal_end_temp,
+                ambient_temp,
+                battery_percent,
             )
             return
 
