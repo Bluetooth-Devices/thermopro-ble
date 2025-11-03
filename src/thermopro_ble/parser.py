@@ -81,6 +81,12 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         """Update from BLE advertisement data."""
         _LOGGER.debug("Parsing thermopro BLE advertisement data: %s", service_info)
         name = service_info.name
+        if not name:
+            _LOGGER.debug(
+                "Skipping ThermoPro BLE advertisement without a device name: %s",
+                service_info,
+            )
+            return
         if not name.startswith(("TP35", "TP39", "TP96", "TP97")):
             return
 

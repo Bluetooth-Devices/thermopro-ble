@@ -63,6 +63,16 @@ TP357 = make_bluetooth_service_info(
     source="local",
 )
 
+TP357_NO_NAME = make_bluetooth_service_info(
+    name=None,
+    manufacturer_data={61890: b"\x00\x1d\x02,"},
+    service_uuids=[],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-60,
+    service_data={},
+    source="local",
+)
+
 
 TP357_RAW = make_bluetooth_service_info(
     name="TP357 (2142)",
@@ -449,6 +459,11 @@ def test_supported_set_the_title():
     parser = ThermoProBluetoothDeviceData()
     assert parser.supported(TP357) is True
     assert parser.title == "TP357 (2142) EEFF"
+
+
+def test_skip_update_when_name_missing():
+    parser = ThermoProBluetoothDeviceData()
+    assert parser.update(TP357_NO_NAME) == SensorUpdate()
 
 
 def test_tp357():

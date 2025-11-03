@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from datetime import datetime
 from struct import pack
 from uuid import UUID
 
 from bleak import BleakClient
+from bleak.exc import BleakError
 from bleak.backends.device import BLEDevice
 from bleak_retry_connector import establish_connection
 
@@ -56,4 +58,5 @@ class ThermoProDevice:
                 True,
             )
         finally:
-            await client.disconnect()
+            with suppress(BleakError):
+                await client.disconnect()
