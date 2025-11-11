@@ -1303,7 +1303,7 @@ def test_tp970r():
     )
 
 
-def test_tp972s():
+def test_tp972s() -> None:
     parser = ThermoProBluetoothDeviceData()
     assert parser.update(TP972S) == SensorUpdate(
         title="TP972S EEFF",
