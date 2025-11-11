@@ -1729,7 +1729,7 @@ def test_tp357s_four_updates():
     )
 
 
-def test_parser_error_1():
+def test_parser_error_1() -> None:
     parser = ThermoProBluetoothDeviceData()
     assert parser.update(INVALID_TP972) == SensorUpdate(
         title="TP972S C890",
@@ -1762,7 +1762,7 @@ def test_parser_error_1():
     )
 
 
-def test_parser_error_2():
+def test_parser_error_2() -> None:
     parser = ThermoProBluetoothDeviceData()
     assert parser.update(INVALID_DEVICE) == SensorUpdate(
         title=None,
