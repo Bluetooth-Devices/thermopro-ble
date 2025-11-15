@@ -621,7 +621,7 @@ def test_tp960r():
                 device_key=DeviceKey(
                     key="internal_temperature_probe_1", device_id=None
                 ),
-                name="Probe 1 Internal Tip Temperature",
+                name="Probe 1 Internal Temperature",
                 native_value=28,
             ),
             DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
@@ -687,7 +687,7 @@ def test_tp960r():
                 device_key=DeviceKey(
                     key="internal_temperature_probe_1", device_id=None
                 ),
-                name="Probe 1 Internal Tip Temperature",
+                name="Probe 1 Internal Temperature",
                 native_value=28,
             ),
             DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
@@ -849,7 +849,7 @@ def test_tp962r():
                 device_key=DeviceKey(
                     key="internal_temperature_probe_1", device_id=None
                 ),
-                name="Probe 1 Internal Tip Temperature",
+                name="Probe 1 Internal Temperature",
                 native_value=37,
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
@@ -1221,7 +1221,7 @@ def test_tp970r():
                 device_key=DeviceKey(
                     key="internal_temperature_probe_1", device_id=None
                 ),
-                name="Probe 1 Internal Tip Temperature",
+                name="Probe 1 Internal Temperature",
                 native_value=23,
             ),
             DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
