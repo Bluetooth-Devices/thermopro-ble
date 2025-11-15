@@ -940,7 +940,7 @@ def test_tp357s():
             DeviceKey(key="battery", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery", device_id=None),
                 name="Battery",
-                native_value=50,
+                native_value=100,
             ),
         },
         binary_entity_descriptions={},
@@ -998,7 +998,7 @@ def test_tp357s():
             DeviceKey(key="battery", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery", device_id=None),
                 name="Battery",
-                native_value=50,
+                native_value=100,
             ),
         },
         binary_entity_descriptions={},
@@ -1521,7 +1521,7 @@ def test_tp357s_four_updates():
             DeviceKey(key="battery", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery", device_id=None),
                 name="Battery",
-                native_value=50,
+                native_value=100,
             ),
             DeviceKey(key="humidity", device_id=None): SensorValue(
                 device_key=DeviceKey(key="humidity", device_id=None),
@@ -1570,7 +1570,7 @@ def test_tp357s_four_updates():
             DeviceKey(key="battery", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery", device_id=None),
                 name="Battery",
-                native_value=50,
+                native_value=100,
             ),
             DeviceKey(key="signal_strength", device_id=None): SensorValue(
                 device_key=DeviceKey(key="signal_strength", device_id=None),
@@ -1639,7 +1639,7 @@ def test_tp357s_four_updates():
             DeviceKey(key="battery", device_id=None): SensorValue(
                 device_key=DeviceKey(key="battery", device_id=None),
                 name="Battery",
-                native_value=50,
+                native_value=100,
             ),
             DeviceKey(key="humidity", device_id=None): SensorValue(
                 device_key=DeviceKey(key="humidity", device_id=None),
