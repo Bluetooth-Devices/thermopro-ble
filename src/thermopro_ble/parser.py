@@ -202,13 +202,15 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             )
             return
 
-        # TP357S seems to be in 6, TP397 and TP393 in 4
+        # TP357S, TP397 and TP393
         if data_length >= 6 and name.startswith("TP3"):
-            battery_byte = data[6] if data_length == 7 else data[4]
-            if battery_byte in BATTERY_VALUE_TO_LEVEL:
+            # battery value is represented by the lower two bits of byte 4
+            # (verified with TP357S on laboratory power supply)
+            battery_value = data[4] & 3
+            if battery_value in BATTERY_VALUE_TO_LEVEL:
                 self.update_predefined_sensor(
                     SensorLibrary.BATTERY__PERCENTAGE,
-                    BATTERY_VALUE_TO_LEVEL[battery_byte],
+                    BATTERY_VALUE_TO_LEVEL[battery_value],
                 )
 
             (temp, humi) = UNPACK_TEMP_HUMID(data[1:4])
