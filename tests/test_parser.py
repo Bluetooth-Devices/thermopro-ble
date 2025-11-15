@@ -1337,6 +1337,24 @@ def test_tp972s() -> None:
                 native_unit_of_measurement=Units.TEMP_CELSIUS,
             ),
             DeviceKey(
+                key="internal_center_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(
+                    key="internal_center_temperature_probe_1", device_id=None
+                ),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(
+                key="internal_end_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(
+                    key="internal_end_temperature_probe_1", device_id=None
+                ),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(
                 key="ambient_temperature_probe_1", device_id=None
             ): SensorDescription(
                 device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
@@ -1359,13 +1377,31 @@ def test_tp972s() -> None:
                 device_key=DeviceKey(
                     key="internal_temperature_probe_1", device_id=None
                 ),
-                name="Probe 1 Internal Temperature",
-                native_value=33,
+                name="Probe 1 Internal Tip Temperature",
+                native_value=3.6,
+            ),
+            DeviceKey(
+                key="internal_center_temperature_probe_1", device_id=None
+            ): SensorValue(
+                device_key=DeviceKey(
+                    key="internal_center_temperature_probe_1", device_id=None
+                ),
+                name="Probe 1 Internal Center Temperature",
+                native_value=0.6,
+            ),
+            DeviceKey(
+                key="internal_end_temperature_probe_1", device_id=None
+            ): SensorValue(
+                device_key=DeviceKey(
+                    key="internal_end_temperature_probe_1", device_id=None
+                ),
+                name="Probe 1 Internal End Temperature",
+                native_value=0.6,
             ),
             DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
                 name="Probe 1 Ambient Temperature",
-                native_value=60,
+                native_value=15,
             ),
         },
         binary_entity_descriptions={},
@@ -1404,6 +1440,24 @@ def test_tp972s() -> None:
                 native_unit_of_measurement=Units.TEMP_CELSIUS,
             ),
             DeviceKey(
+                key="internal_center_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(
+                    key="internal_center_temperature_probe_1", device_id=None
+                ),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(
+                key="internal_end_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(
+                    key="internal_end_temperature_probe_1", device_id=None
+                ),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(
                 key="ambient_temperature_probe_1", device_id=None
             ): SensorDescription(
                 device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
@@ -1426,13 +1480,31 @@ def test_tp972s() -> None:
                 device_key=DeviceKey(
                     key="internal_temperature_probe_1", device_id=None
                 ),
-                name="Probe 1 Internal Temperature",
-                native_value=74,
+                name="Probe 1 Internal Tip Temperature",
+                native_value=23.3,
+            ),
+            DeviceKey(
+                key="internal_center_temperature_probe_1", device_id=None
+            ): SensorValue(
+                device_key=DeviceKey(
+                    key="internal_center_temperature_probe_1", device_id=None
+                ),
+                name="Probe 1 Internal Center Temperature",
+                native_value=23.6,
+            ),
+            DeviceKey(
+                key="internal_end_temperature_probe_1", device_id=None
+            ): SensorValue(
+                device_key=DeviceKey(
+                    key="internal_end_temperature_probe_1", device_id=None
+                ),
+                name="Probe 1 Internal End Temperature",
+                native_value=23.6,
             ),
             DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
                 device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
                 name="Probe 1 Ambient Temperature",
-                native_value=87,
+                native_value=30.0,
             ),
         },
         binary_entity_descriptions={},
