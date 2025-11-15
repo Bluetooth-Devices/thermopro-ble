@@ -1288,7 +1288,7 @@ def test_tp970r():
                 device_key=DeviceKey(
                     key="internal_temperature_probe_1", device_id=None
                 ),
-                name="Probe 1 Internal Tip Temperature",
+                name="Probe 1 Internal Temperature",
                 native_value=22,
             ),
             DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
