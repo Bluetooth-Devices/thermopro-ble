@@ -48,7 +48,7 @@ def tp96_battery(voltage: int) -> float:
 # TP97x only supply temperatures in F, even when display is set to celsius
 def fahrenheit_to_celsius(fahrenheit_temp: float) -> float:
     celsius_temp = (fahrenheit_temp - 32) * 5 / 9
-    return celsius_temp
+    return round(celsius_temp, 1)
 
 
 class ThermoProBluetoothDeviceData(BluetoothData):
@@ -87,14 +87,14 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         internal_temp_tip: float,
         internal_temp_center: float,
         internal_temp_end: float,
-        ambient_temp: int,
+        ambient_temp: float,
         battery_percent: float,
     ) -> None:
         self.set_precision(1)
         self.update_predefined_sensor(
             SensorLibrary.TEMPERATURE__CELSIUS,
             internal_temp_tip,
-            key=f"internal_tip_temperature_probe_{probe_one_indexed}",
+            key=f"internal_temperature_probe_{probe_one_indexed}",
             name=f"Probe {probe_one_indexed} Internal Tip Temperature",
         )
         self.update_predefined_sensor(
