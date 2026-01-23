@@ -213,7 +213,13 @@ class ThermoProBluetoothDeviceData(BluetoothData):
                     BATTERY_VALUE_TO_LEVEL[battery_value],
                 )
 
-            (temp, humi) = UNPACK_TEMP_HUMID(data[1:4])
+            # TP357S could report invalid temperature and humidity values
+            # filter them out
+            temp_humi = data[1:4]
+            if temp_humi == b"\xff\xff\xff":
+                return
+
+            (temp, humi) = UNPACK_TEMP_HUMID(temp_humi)
             self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temp / 10)
             self.update_predefined_sensor(SensorLibrary.HUMIDITY__PERCENTAGE, humi)
             return
