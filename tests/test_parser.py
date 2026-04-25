@@ -456,6 +456,80 @@ TP357S_UPDATE_4 = make_bluetooth_service_info(
     source="2C:CF:67:1B:03:3A",
 )
 
+# Mixed probe format fixtures for TP972S.
+# The probe index is encoded in the first LE byte of the manufacturer data key
+# (0x00 = probe 1, 0x01 = probe 2). Two wire formats can appear on the same device:
+#   23-byte: multi-point probe (tip/center/end temps) — mfr_id LE byte[0] encodes probe index
+#   13-byte: simple probe — identical <BHHH> payload as the 7-byte TP96 format with
+#            6 extra bytes appended; mfr_id for probe 1 = 0x3300, probe 2 = 0x3301
+
+# 13-byte probe 1 only
+TP972S_13B_PROBE1 = make_bluetooth_service_info(
+    name="TP972S",
+    manufacturer_data={13056: b"\x00\x48\x0a\x33\x00\xff\xee\xdd\xcc\xbb\xaa"},
+    service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-75,
+    service_data={},
+    source="local",
+)
+
+# Probe 1 (13-byte) + probe 2 (13-byte) — probe 2 is new in this advertisement
+TP972S_13B_BOTH = make_bluetooth_service_info(
+    name="TP972S",
+    manufacturer_data={
+        13056: b"\x00\x48\x0a\x33\x00\xff\xee\xdd\xcc\xbb\xaa",
+        13057: b"\x00\x48\x0a\x33\x00\xff\xee\xdd\xcc\xbb\xaa",
+    },
+    service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-75,
+    service_data={},
+    source="local",
+)
+
+# Probe 1 (23-byte) + probe 2 (23-byte) — probe 2 (mfr_id 29185) is new
+TP972S_23B_BOTH = make_bluetooth_service_info(
+    name="TP972S",
+    manufacturer_data={
+        29184: b"\x00j\n3\xd3\xb8B\x00@\xaeBf\x06\xaeBlTswD\xf8",
+        29185: b"\x00j\n3\xd3\xb8B\x00@\xaeBf\x06\xaeBlTswD\xf8",
+    },
+    service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-75,
+    service_data={},
+    source="local",
+)
+
+# Probe 1 (13-byte) + probe 2 (23-byte multi-point) — probe 2 is new
+TP972S_13B_P1_23B_P2 = make_bluetooth_service_info(
+    name="TP972S",
+    manufacturer_data={
+        13056: b"\x00\x48\x0a\x33\x00\xff\xee\xdd\xcc\xbb\xaa",
+        29185: b"\x00j\n3\xd3\xb8B\x00@\xaeBf\x06\xaeBlTswD\xf8",
+    },
+    service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-75,
+    service_data={},
+    source="local",
+)
+
+# Probe 1 (23-byte multi-point) + probe 2 (13-byte) — probe 2 is new
+TP972S_23B_P1_13B_P2 = make_bluetooth_service_info(
+    name="TP972S",
+    manufacturer_data={
+        29184: b"\x00j\n3\xd3\xb8B\x00@\xaeBf\x06\xaeBlTswD\xf8",
+        13057: b"\x00\x48\x0a\x33\x00\xff\xee\xdd\xcc\xbb\xaa",
+    },
+    service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-75,
+    service_data={},
+    source="local",
+)
+
 INVALID_TP972 = make_bluetooth_service_info(
     name="TP972S",
     address="C3:18:C9:9C:C8:90",
@@ -1985,3 +2059,77 @@ def test_parser_error_2() -> None:
         binary_entity_values={},
         events={},
     )
+
+
+def test_tp972s_both_probes_13byte() -> None:
+    """Both probe slots use the 13-byte format (TP96-style payload + reversed MAC)."""
+    parser = ThermoProBluetoothDeviceData()
+
+    result = parser.update(TP972S_13B_PROBE1)
+    vals = result.entity_values
+    assert vals[DeviceKey(key="internal_temperature_probe_1", device_id=None)].native_value == 21
+    assert vals[DeviceKey(key="ambient_temperature_probe_1", device_id=None)].native_value == 21
+    assert DeviceKey(key="internal_temperature_probe_2", device_id=None) not in vals
+
+    result = parser.update(TP972S_13B_BOTH)
+    vals = result.entity_values
+    assert vals[DeviceKey(key="internal_temperature_probe_2", device_id=None)].native_value == 21
+    assert vals[DeviceKey(key="ambient_temperature_probe_2", device_id=None)].native_value == 21
+    # 13-byte format only has internal + ambient; no center/end sensors
+    assert DeviceKey(key="internal_center_temperature_probe_2", device_id=None) not in vals
+    assert DeviceKey(key="internal_end_temperature_probe_2", device_id=None) not in vals
+
+
+def test_tp972s_both_probes_23byte() -> None:
+    """Both probe slots use the 23-byte multi-point format."""
+    parser = ThermoProBluetoothDeviceData()
+
+    result = parser.update(TP972S)
+    vals = result.entity_values
+    assert vals[DeviceKey(key="internal_temperature_probe_1", device_id=None)].native_value == 3.6
+    assert DeviceKey(key="internal_temperature_probe_2", device_id=None) not in vals
+
+    result = parser.update(TP972S_23B_BOTH)
+    vals = result.entity_values
+    assert vals[DeviceKey(key="internal_temperature_probe_2", device_id=None)].native_value == 3.6
+    assert vals[DeviceKey(key="internal_center_temperature_probe_2", device_id=None)].native_value == 0.6
+    assert vals[DeviceKey(key="internal_end_temperature_probe_2", device_id=None)].native_value == 0.6
+    assert vals[DeviceKey(key="ambient_temperature_probe_2", device_id=None)].native_value == 15
+
+
+def test_tp972s_probe1_13byte_probe2_23byte() -> None:
+    """Probe 1 uses 13-byte format; probe 2 uses 23-byte multi-point format."""
+    parser = ThermoProBluetoothDeviceData()
+
+    result = parser.update(TP972S_13B_PROBE1)
+    vals = result.entity_values
+    assert vals[DeviceKey(key="internal_temperature_probe_1", device_id=None)].native_value == 21
+    # 13-byte probe 1 has no center/end temperature sensors
+    assert DeviceKey(key="internal_center_temperature_probe_1", device_id=None) not in vals
+
+    result = parser.update(TP972S_13B_P1_23B_P2)
+    vals = result.entity_values
+    assert vals[DeviceKey(key="internal_temperature_probe_2", device_id=None)].native_value == 3.6
+    assert vals[DeviceKey(key="internal_center_temperature_probe_2", device_id=None)].native_value == 0.6
+    assert vals[DeviceKey(key="internal_end_temperature_probe_2", device_id=None)].native_value == 0.6
+    assert vals[DeviceKey(key="ambient_temperature_probe_2", device_id=None)].native_value == 15
+
+
+def test_tp972s_probe1_23byte_probe2_13byte() -> None:
+    """Probe 1 uses 23-byte multi-point format; probe 2 uses 13-byte format."""
+    parser = ThermoProBluetoothDeviceData()
+
+    result = parser.update(TP972S)
+    vals = result.entity_values
+    assert vals[DeviceKey(key="internal_temperature_probe_1", device_id=None)].native_value == 3.6
+    assert vals[DeviceKey(key="internal_center_temperature_probe_1", device_id=None)].native_value == 0.6
+    assert vals[DeviceKey(key="internal_end_temperature_probe_1", device_id=None)].native_value == 0.6
+    assert DeviceKey(key="internal_temperature_probe_2", device_id=None) not in vals
+
+    result = parser.update(TP972S_23B_P1_13B_P2)
+    vals = result.entity_values
+    assert vals[DeviceKey(key="internal_temperature_probe_2", device_id=None)].native_value == 21
+    assert vals[DeviceKey(key="ambient_temperature_probe_2", device_id=None)].native_value == 21
+    # 13-byte replacement probe has no center/end temperature sensors
+    assert DeviceKey(key="internal_center_temperature_probe_2", device_id=None) not in vals
+    assert DeviceKey(key="internal_end_temperature_probe_2", device_id=None) not in vals

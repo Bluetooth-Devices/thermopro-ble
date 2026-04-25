@@ -183,15 +183,18 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             )
             return
 
-        if data_length == 7 and name.startswith(("TP96", "TP97")):
+        if data_length in (7, 13) and name.startswith(("TP96", "TP97")):
             # TP96 has a different format that is shared with TP970
             # It has an internal temp probe and an ambient temp probe
+            # Some probes append 6 extra bytes (observed to be the reversed
+            # base-station MAC address) after the standard 7-byte payload,
+            # yielding 13 bytes total. The extra bytes are ignored.
             (
                 probe_zero_indexed,
                 internal_temp,
                 battery_voltage,
                 ambient_temp,
-            ) = UNPACK_SPIKE_TEMP(data)
+            ) = UNPACK_SPIKE_TEMP(data[:7])
 
             probe_one_indexed = probe_zero_indexed + 1
             internal_temp = internal_temp - 30
