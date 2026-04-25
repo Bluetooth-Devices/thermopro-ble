@@ -459,7 +459,8 @@ TP357S_UPDATE_4 = make_bluetooth_service_info(
 # Mixed probe format fixtures for TP972S.
 # The probe index is encoded in the first LE byte of the manufacturer data key
 # (0x00 = probe 1, 0x01 = probe 2). Two wire formats can appear on the same device:
-#   23-byte: multi-point probe (tip/center/end temps) — mfr_id LE byte[0] encodes probe index
+#   23-byte: multi-point probe (tip/center/end temps) — mfr_id LE byte[0] encodes
+#            probe index
 #   13-byte: simple probe — identical <BHHH> payload as the 7-byte TP96 format with
 #            6 extra bytes appended; mfr_id for probe 1 = 0x3300, probe 2 = 0x3301
 
@@ -2067,16 +2068,30 @@ def test_tp972s_both_probes_13byte() -> None:
 
     result = parser.update(TP972S_13B_PROBE1)
     vals = result.entity_values
-    assert vals[DeviceKey(key="internal_temperature_probe_1", device_id=None)].native_value == 21
-    assert vals[DeviceKey(key="ambient_temperature_probe_1", device_id=None)].native_value == 21
+    assert (
+        vals[DeviceKey(key="internal_temperature_probe_1", device_id=None)].native_value
+        == 21
+    )
+    assert (
+        vals[DeviceKey(key="ambient_temperature_probe_1", device_id=None)].native_value
+        == 21
+    )
     assert DeviceKey(key="internal_temperature_probe_2", device_id=None) not in vals
 
     result = parser.update(TP972S_13B_BOTH)
     vals = result.entity_values
-    assert vals[DeviceKey(key="internal_temperature_probe_2", device_id=None)].native_value == 21
-    assert vals[DeviceKey(key="ambient_temperature_probe_2", device_id=None)].native_value == 21
+    assert (
+        vals[DeviceKey(key="internal_temperature_probe_2", device_id=None)].native_value
+        == 21
+    )
+    assert (
+        vals[DeviceKey(key="ambient_temperature_probe_2", device_id=None)].native_value
+        == 21
+    )
     # 13-byte format only has internal + ambient; no center/end sensors
-    assert DeviceKey(key="internal_center_temperature_probe_2", device_id=None) not in vals
+    assert (
+        DeviceKey(key="internal_center_temperature_probe_2", device_id=None) not in vals
+    )
     assert DeviceKey(key="internal_end_temperature_probe_2", device_id=None) not in vals
 
 
@@ -2086,15 +2101,34 @@ def test_tp972s_both_probes_23byte() -> None:
 
     result = parser.update(TP972S)
     vals = result.entity_values
-    assert vals[DeviceKey(key="internal_temperature_probe_1", device_id=None)].native_value == 3.6
+    assert (
+        vals[DeviceKey(key="internal_temperature_probe_1", device_id=None)].native_value
+        == 3.6
+    )
     assert DeviceKey(key="internal_temperature_probe_2", device_id=None) not in vals
 
     result = parser.update(TP972S_23B_BOTH)
     vals = result.entity_values
-    assert vals[DeviceKey(key="internal_temperature_probe_2", device_id=None)].native_value == 3.6
-    assert vals[DeviceKey(key="internal_center_temperature_probe_2", device_id=None)].native_value == 0.6
-    assert vals[DeviceKey(key="internal_end_temperature_probe_2", device_id=None)].native_value == 0.6
-    assert vals[DeviceKey(key="ambient_temperature_probe_2", device_id=None)].native_value == 15
+    assert (
+        vals[DeviceKey(key="internal_temperature_probe_2", device_id=None)].native_value
+        == 3.6
+    )
+    assert (
+        vals[
+            DeviceKey(key="internal_center_temperature_probe_2", device_id=None)
+        ].native_value
+        == 0.6
+    )
+    assert (
+        vals[
+            DeviceKey(key="internal_end_temperature_probe_2", device_id=None)
+        ].native_value
+        == 0.6
+    )
+    assert (
+        vals[DeviceKey(key="ambient_temperature_probe_2", device_id=None)].native_value
+        == 15
+    )
 
 
 def test_tp972s_probe1_13byte_probe2_23byte() -> None:
@@ -2103,16 +2137,37 @@ def test_tp972s_probe1_13byte_probe2_23byte() -> None:
 
     result = parser.update(TP972S_13B_PROBE1)
     vals = result.entity_values
-    assert vals[DeviceKey(key="internal_temperature_probe_1", device_id=None)].native_value == 21
+    assert (
+        vals[DeviceKey(key="internal_temperature_probe_1", device_id=None)].native_value
+        == 21
+    )
     # 13-byte probe 1 has no center/end temperature sensors
-    assert DeviceKey(key="internal_center_temperature_probe_1", device_id=None) not in vals
+    assert (
+        DeviceKey(key="internal_center_temperature_probe_1", device_id=None) not in vals
+    )
 
     result = parser.update(TP972S_13B_P1_23B_P2)
     vals = result.entity_values
-    assert vals[DeviceKey(key="internal_temperature_probe_2", device_id=None)].native_value == 3.6
-    assert vals[DeviceKey(key="internal_center_temperature_probe_2", device_id=None)].native_value == 0.6
-    assert vals[DeviceKey(key="internal_end_temperature_probe_2", device_id=None)].native_value == 0.6
-    assert vals[DeviceKey(key="ambient_temperature_probe_2", device_id=None)].native_value == 15
+    assert (
+        vals[DeviceKey(key="internal_temperature_probe_2", device_id=None)].native_value
+        == 3.6
+    )
+    assert (
+        vals[
+            DeviceKey(key="internal_center_temperature_probe_2", device_id=None)
+        ].native_value
+        == 0.6
+    )
+    assert (
+        vals[
+            DeviceKey(key="internal_end_temperature_probe_2", device_id=None)
+        ].native_value
+        == 0.6
+    )
+    assert (
+        vals[DeviceKey(key="ambient_temperature_probe_2", device_id=None)].native_value
+        == 15
+    )
 
 
 def test_tp972s_probe1_23byte_probe2_13byte() -> None:
@@ -2121,15 +2176,36 @@ def test_tp972s_probe1_23byte_probe2_13byte() -> None:
 
     result = parser.update(TP972S)
     vals = result.entity_values
-    assert vals[DeviceKey(key="internal_temperature_probe_1", device_id=None)].native_value == 3.6
-    assert vals[DeviceKey(key="internal_center_temperature_probe_1", device_id=None)].native_value == 0.6
-    assert vals[DeviceKey(key="internal_end_temperature_probe_1", device_id=None)].native_value == 0.6
+    assert (
+        vals[DeviceKey(key="internal_temperature_probe_1", device_id=None)].native_value
+        == 3.6
+    )
+    assert (
+        vals[
+            DeviceKey(key="internal_center_temperature_probe_1", device_id=None)
+        ].native_value
+        == 0.6
+    )
+    assert (
+        vals[
+            DeviceKey(key="internal_end_temperature_probe_1", device_id=None)
+        ].native_value
+        == 0.6
+    )
     assert DeviceKey(key="internal_temperature_probe_2", device_id=None) not in vals
 
     result = parser.update(TP972S_23B_P1_13B_P2)
     vals = result.entity_values
-    assert vals[DeviceKey(key="internal_temperature_probe_2", device_id=None)].native_value == 21
-    assert vals[DeviceKey(key="ambient_temperature_probe_2", device_id=None)].native_value == 21
+    assert (
+        vals[DeviceKey(key="internal_temperature_probe_2", device_id=None)].native_value
+        == 21
+    )
+    assert (
+        vals[DeviceKey(key="ambient_temperature_probe_2", device_id=None)].native_value
+        == 21
+    )
     # 13-byte replacement probe has no center/end temperature sensors
-    assert DeviceKey(key="internal_center_temperature_probe_2", device_id=None) not in vals
+    assert (
+        DeviceKey(key="internal_center_temperature_probe_2", device_id=None) not in vals
+    )
     assert DeviceKey(key="internal_end_temperature_probe_2", device_id=None) not in vals
