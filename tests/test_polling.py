@@ -101,9 +101,7 @@ async def test_async_poll_connects_and_disconnects(
     disconnect_mock = AsyncMock()
     monkeypatch.setattr(client, "disconnect", disconnect_mock)
     establish = AsyncMock(return_value=client)
-    monkeypatch.setattr(
-        "thermopro_ble.parser.establish_connection", establish
-    )
+    monkeypatch.setattr("thermopro_ble.parser.establish_connection", establish)
 
     result = await parser.async_poll(_make_ble_device())
 
@@ -123,9 +121,7 @@ async def test_async_poll_swallows_connect_errors(
     parser.update(TP357)
 
     establish = AsyncMock(side_effect=BleakError("nope"))
-    monkeypatch.setattr(
-        "thermopro_ble.parser.establish_connection", establish
-    )
+    monkeypatch.setattr("thermopro_ble.parser.establish_connection", establish)
 
     # Should not raise.
     result = await parser.async_poll(_make_ble_device())
@@ -141,9 +137,7 @@ async def test_async_poll_swallows_timeout(
     parser.update(TP357)
 
     establish = AsyncMock(side_effect=TimeoutError())
-    monkeypatch.setattr(
-        "thermopro_ble.parser.establish_connection", establish
-    )
+    monkeypatch.setattr("thermopro_ble.parser.establish_connection", establish)
 
     result = await parser.async_poll(_make_ble_device())
     assert hasattr(result, "devices")
@@ -158,9 +152,7 @@ async def test_async_poll_swallows_disconnect_errors(
     parser.update(TP357)
 
     client = BleakClient("")
-    monkeypatch.setattr(
-        client, "disconnect", AsyncMock(side_effect=BleakError("boom"))
-    )
+    monkeypatch.setattr(client, "disconnect", AsyncMock(side_effect=BleakError("boom")))
     monkeypatch.setattr(
         "thermopro_ble.parser.establish_connection",
         AsyncMock(return_value=client),
