@@ -57,7 +57,6 @@ scanner), it is supported:
 | TP960R | TP96   | TempSpike wireless meat probe (single)      |                |
 | TP962R | TP96   | TempSpike wireless meat probe (dual)        |                |
 | TP970R | TP97   | TempSpike Plus wireless meat probe          |                |
-| TP972  | TP97   | TempSpike Pro wireless meat probe           |                |
 | TP972S | TP97   | TempSpike Pro wireless meat probe (revised) |                |
 
 The authoritative list lives in

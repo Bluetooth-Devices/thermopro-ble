@@ -14,7 +14,7 @@ from typing import Literal
 # A model "family" is what we route advertisements by; every known model
 # starts with one of these prefixes. The parser uses ``KNOWN_FAMILIES`` for
 # its top-level filter.
-ModelFamily = Literal["TP35", "TP39", "TP96", "TP97", "TP90"]
+ModelFamily = Literal["TP35", "TP39", "TP96", "TP97"]
 
 # How a model exposes sensor data:
 #   - "advertisement": data is decoded from BLE manufacturer data (passive)
@@ -47,63 +47,57 @@ KNOWN_MODELS: tuple[ThermoProModel, ...] = (
         name="TP357",
         family="TP35",
         transport="advertisement",
-        description="Indoor temperature & humidity sensor.",
+        description="Indoor temperature & humidity sensor",
     ),
     ThermoProModel(
         name="TP357S",
         family="TP35",
         transport="advertisement",
-        description="Indoor temperature & humidity sensor (revised).",
+        description="Indoor temperature & humidity sensor",
     ),
     ThermoProModel(
         name="TP358",
         family="TP35",
         transport="advertisement",
-        description="Indoor temperature & humidity sensor with clock.",
+        description="Indoor temp & humidity sensor with clock",
         capabilities=frozenset({CAP_SET_DATETIME}),
     ),
     ThermoProModel(
         name="TP358S",
         family="TP35",
         transport="advertisement",
-        description="Indoor temperature & humidity sensor with clock (revised).",
+        description="Indoor temp & humidity sensor with clock",
         capabilities=frozenset({CAP_SET_DATETIME}),
     ),
     ThermoProModel(
         name="TP393",
         family="TP39",
         transport="advertisement",
-        description="Indoor temperature & humidity sensor with display.",
+        description="Indoor temperature & humidity sensor",
     ),
     ThermoProModel(
         name="TP960R",
         family="TP96",
         transport="advertisement",
-        description="TempSpike wireless meat probe (single probe).",
+        description="TempSpike wireless meat probe (single)",
     ),
     ThermoProModel(
         name="TP962R",
         family="TP96",
         transport="advertisement",
-        description="TempSpike wireless meat probe (dual probe).",
+        description="TempSpike wireless meat probe (dual)",
     ),
     ThermoProModel(
         name="TP970R",
         family="TP97",
         transport="advertisement",
-        description="TempSpike Plus wireless meat probe.",
-    ),
-    ThermoProModel(
-        name="TP972",
-        family="TP97",
-        transport="advertisement",
-        description="TempSpike Pro wireless meat probe.",
+        description="TempSpike Plus wireless meat probe",
     ),
     ThermoProModel(
         name="TP972S",
         family="TP97",
         transport="advertisement",
-        description="TempSpike Pro wireless meat probe (revised).",
+        description="TempSpike Pro wireless meat probe (revised)",
     ),
 )
 

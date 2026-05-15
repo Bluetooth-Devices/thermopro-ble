@@ -12,12 +12,20 @@ from .models import CAP_SET_DATETIME, has_capability, models_with_capability
 
 
 class ThermoProDevice:
+    """Helper for GATT operations against ThermoPro thermometers.
+
+    ``DATETIME_SUPPORTED_MODELS`` is a snapshot of ``models.KNOWN_MODELS``
+    taken at class-definition time. The registry is module-level immutable,
+    so this is equivalent to a literal frozenset today, but mutating
+    ``KNOWN_MODELS`` at runtime would not be reflected here.
+    """
+
     datetime_uuid = UUID("00010203-0405-0607-0809-0a0b0c0d2b11")
 
     # Models known to accept the datetime GATT write. Sourced from the
     # central model registry; ``models_with_capability`` keeps this in sync
     # with ``models.KNOWN_MODELS`` so adding a new datetime-capable model
-    # only requires updating one place.
+    # only requires updating one place. Snapshot semantics: see class docstring.
     DATETIME_SUPPORTED_MODELS: frozenset[str] = models_with_capability(CAP_SET_DATETIME)
 
     def __init__(self: ThermoProDevice, ble_device: BLEDevice):
