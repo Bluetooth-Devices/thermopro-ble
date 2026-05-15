@@ -38,6 +38,36 @@ Install this via pip (or your favourite package manager):
 
 `pip install thermopro-ble`
 
+## Supported devices
+
+This library decodes ThermoPro Bluetooth Low Energy advertisements. It
+does not pair with or connect to devices for sensor data — readings are
+parsed passively from the broadcasts each thermometer emits.
+
+Devices are matched by the advertised name prefix. The following families
+have decoders with test coverage:
+
+| Family  | Verified models                | Sensors                                              |
+| ------- | ------------------------------ | ---------------------------------------------------- |
+| `TP35x` | TP357, TP357S, TP358, TP358S   | Temperature, humidity, battery                       |
+| `TP39x` | TP393                          | Temperature, humidity, battery                       |
+| `TP96x` | TP960R, TP962R (TempSpike)     | Internal/ambient probe temperature, battery          |
+| `TP97x` | TP970R, TP972S (TempSpike Pro) | Tip/center/end probe temperatures, ambient, battery  |
+
+A device whose advertised name starts with one of the family prefixes
+above will be decoded by the matching path. Other ThermoPro products
+(including models that communicate exclusively over GATT rather than
+broadcasting their readings, such as the TP902/TP920) are not supported
+by the advertisement parser.
+
+### GATT services
+
+In addition to the passive parser, `ThermoProDevice` exposes a
+`set_datetime()` GATT write for clock synchronization. It is known to
+work on the TP358 and TP358S; other models may accept the same write but
+have not been verified — use `ThermoProDevice.supports_set_datetime()`
+to gate calls from downstream integrations.
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
