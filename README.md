@@ -47,18 +47,18 @@ parsed passively from the broadcasts each thermometer emits.
 If your device advertises as one of the following names (visible in a BLE
 scanner), it is supported:
 
-| Model    | Family | Type                                        | `set_datetime` |
-| -------- | ------ | ------------------------------------------- | :------------: |
-| TP357    | TP35   | Indoor temperature & humidity sensor        |                |
-| TP357S   | TP35   | Indoor temperature & humidity sensor        |                |
-| TP358    | TP35   | Indoor temp & humidity sensor with clock    |       ✓        |
-| TP358S   | TP35   | Indoor temp & humidity sensor with clock    |       ✓        |
-| TP393    | TP39   | Indoor temperature & humidity sensor        |                |
-| TP960R   | TP96   | TempSpike wireless meat probe (single)      |                |
-| TP962R   | TP96   | TempSpike wireless meat probe (dual)        |                |
-| TP970R   | TP97   | TempSpike Plus wireless meat probe          |                |
-| TP972    | TP97   | TempSpike Pro wireless meat probe           |                |
-| TP972S   | TP97   | TempSpike Pro wireless meat probe (revised) |                |
+| Model  | Family | Type                                        | `set_datetime` |
+| ------ | ------ | ------------------------------------------- | :------------: |
+| TP357  | TP35   | Indoor temperature & humidity sensor        |                |
+| TP357S | TP35   | Indoor temperature & humidity sensor        |                |
+| TP358  | TP35   | Indoor temp & humidity sensor with clock    |       ✓        |
+| TP358S | TP35   | Indoor temp & humidity sensor with clock    |       ✓        |
+| TP393  | TP39   | Indoor temperature & humidity sensor        |                |
+| TP960R | TP96   | TempSpike wireless meat probe (single)      |                |
+| TP962R | TP96   | TempSpike wireless meat probe (dual)        |                |
+| TP970R | TP97   | TempSpike Plus wireless meat probe          |                |
+| TP972  | TP97   | TempSpike Pro wireless meat probe           |                |
+| TP972S | TP97   | TempSpike Pro wireless meat probe (revised) |                |
 
 The authoritative list lives in
 [`src/thermopro_ble/models.py`](src/thermopro_ble/models.py); query it at
