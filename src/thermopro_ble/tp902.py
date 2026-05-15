@@ -389,7 +389,7 @@ class TP902Device:
     def __init__(self, ble_device: BLEDevice) -> None:
         self.ble_device = ble_device
 
-    def session(self) -> "TP902Session":
+    def session(self) -> TP902Session:
         """Return an unstarted session. Use as ``async with``."""
         return TP902Session(self.ble_device)
 
@@ -402,7 +402,7 @@ class TP902Session:
         self._client: BleakClient | None = None
         self._queue: asyncio.Queue[Notification] = asyncio.Queue()
 
-    async def __aenter__(self) -> "TP902Session":  # pragma: no cover - GATT path
+    async def __aenter__(self) -> TP902Session:  # pragma: no cover - GATT path
         self._client = await establish_connection(
             BleakClient, self._ble_device, self._ble_device.address
         )
@@ -455,7 +455,7 @@ class TP902Session:
         self,
         *,
         on_unknown: Callable[[UnknownFrame], None] | None = None,
-    ) -> "asyncio.Queue[Notification]":  # pragma: no cover - GATT path
+    ) -> asyncio.Queue[Notification]:  # pragma: no cover - GATT path
         """Return the queue of decoded notifications.
 
         ``on_unknown`` is invoked synchronously for :class:`UnknownFrame`
