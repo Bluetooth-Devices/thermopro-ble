@@ -47,12 +47,12 @@ parsed passively from the broadcasts each thermometer emits.
 Devices are matched by the advertised name prefix. The following families
 have decoders with test coverage:
 
-| Family  | Verified models                | Sensors                                              |
-| ------- | ------------------------------ | ---------------------------------------------------- |
-| `TP35x` | TP357, TP357S, TP358, TP358S   | Temperature, humidity, battery                       |
-| `TP39x` | TP393                          | Temperature, humidity, battery                       |
-| `TP96x` | TP960R, TP962R (TempSpike)     | Internal/ambient probe temperature, battery          |
-| `TP97x` | TP970R, TP972S (TempSpike Pro) | Tip/center/end probe temperatures, ambient, battery  |
+| Family  | Verified models                | Sensors                                             |
+| ------- | ------------------------------ | --------------------------------------------------- |
+| `TP35x` | TP357, TP357S, TP358, TP358S   | Temperature, humidity, battery                      |
+| `TP39x` | TP393                          | Temperature, humidity, battery                      |
+| `TP96x` | TP960R, TP962R (TempSpike)     | Internal/ambient probe temperature, battery         |
+| `TP97x` | TP970R, TP972S (TempSpike Pro) | Tip/center/end probe temperatures, ambient, battery |
 
 A device whose advertised name starts with one of the family prefixes
 above will be decoded by the matching path. Other ThermoPro products
