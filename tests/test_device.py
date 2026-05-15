@@ -169,6 +169,24 @@ async def test_non_timezone_aware_datetime_set(
         )
 
 
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        ("TP358", True),
+        ("TP358S", True),
+        ("TP358 (2142)", True),
+        ("TP358S (2142)", True),
+        ("TP357", False),
+        ("TP357S", False),
+        ("TP393", False),
+        ("TP96", False),
+        ("", False),
+    ],
+)
+def test_supports_set_datetime(value: str, expected: bool) -> None:
+    assert ThermoProDevice.supports_set_datetime(value) is expected
+
+
 if __name__ == "__main__":
     for name, dt, am_pm, packed in PACK_TESTDATA:
         print(

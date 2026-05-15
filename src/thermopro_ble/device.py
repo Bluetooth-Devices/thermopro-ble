@@ -12,8 +12,23 @@ from bleak_retry_connector import establish_connection
 class ThermoProDevice:
     datetime_uuid = UUID("00010203-0405-0607-0809-0a0b0c0d2b11")
 
+    # Models known to accept the datetime GATT write. The TP358S is a hardware
+    # revision of the TP358 that shares the same datetime protocol (#126).
+    DATETIME_SUPPORTED_MODELS: frozenset[str] = frozenset({"TP358", "TP358S"})
+
     def __init__(self: ThermoProDevice, ble_device: BLEDevice):
         self.ble_device = ble_device
+
+    @classmethod
+    def supports_set_datetime(cls, model_or_name: str) -> bool:
+        """Return True if the device model is known to accept set_datetime.
+
+        Accepts either a bare model string ("TP358S") or an advertised device
+        name ("TP358S (2142)"). Useful for downstream integrations that gate
+        the datetime service on known-supported hardware.
+        """
+        model = model_or_name.split(" ", 1)[0]
+        return model in cls.DATETIME_SUPPORTED_MODELS
 
     # ----
     # from https://github.com/koenvervloesem/bluetooth-clocks/

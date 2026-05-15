@@ -198,6 +198,28 @@ TP393 = make_bluetooth_service_info(
     source="local",
 )
 
+# TP358 / TP358S share the TP35x advertisement format and parser path.
+# These fixtures lock in support for the model strings called out in #126.
+TP358 = make_bluetooth_service_info(
+    name="TP358 (2142)",
+    manufacturer_data={61890: b"\x00\x1d\x02,"},
+    service_uuids=[],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-60,
+    service_data={},
+    source="local",
+)
+
+TP358S = make_bluetooth_service_info(
+    name="TP358S (2142)",
+    manufacturer_data={61890: b"\x00\x1d\x02,"},
+    service_uuids=[],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-60,
+    service_data={},
+    source="local",
+)
+
 
 TP393_DETECT_CHANGED_1 = make_bluetooth_service_info(
     name="TP393 (9376)",
@@ -684,6 +706,38 @@ def test_tp357_raw():
         },
         binary_entity_descriptions={},
         binary_entity_values={},
+    )
+
+
+def test_tp358_model():
+    """TP358 advertisements should be parsed and reported with model TP358."""
+    parser = ThermoProBluetoothDeviceData()
+    update = parser.update(TP358)
+    assert update.devices[None].model == "TP358"
+    assert update.devices[None].name == "TP358 (2142)"
+    assert (
+        update.entity_values[DeviceKey(key="temperature", device_id=None)].native_value
+        == 24.1
+    )
+    assert (
+        update.entity_values[DeviceKey(key="humidity", device_id=None)].native_value
+        == 29
+    )
+
+
+def test_tp358s_model():
+    """TP358S (hardware revision of TP358) should also be parsed (#126)."""
+    parser = ThermoProBluetoothDeviceData()
+    update = parser.update(TP358S)
+    assert update.devices[None].model == "TP358S"
+    assert update.devices[None].name == "TP358S (2142)"
+    assert (
+        update.entity_values[DeviceKey(key="temperature", device_id=None)].native_value
+        == 24.1
+    )
+    assert (
+        update.entity_values[DeviceKey(key="humidity", device_id=None)].native_value
+        == 29
     )
 
 
