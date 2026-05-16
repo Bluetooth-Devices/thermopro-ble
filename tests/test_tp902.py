@@ -546,9 +546,7 @@ class TestTP902SessionNotifyDispatch:
             payload = bytes([UNITS_C, SOUND_ON, 80])
             frame = bytes([0x26, 0x03]) + payload
             frame = frame + bytes([sum(frame) & 0xFF])
-            session._on_notify(
-                MagicMock(), bytearray(frame)
-            )
+            session._on_notify(MagicMock(), bytearray(frame))
             queue = await session.events()
             assert queue.qsize() == 1
             event = queue.get_nowait()
@@ -562,9 +560,7 @@ class TestTP902SessionNotifyDispatch:
             _make_ble_device(), connector=AsyncMock(return_value=client)
         )
         async with session:
-            session._on_notify(
-                MagicMock(), bytearray(b"\x00")
-            )
+            session._on_notify(MagicMock(), bytearray(b"\x00"))
             queue = await session.events()
             assert queue.empty()
 
@@ -578,9 +574,7 @@ class TestTP902SessionNotifyDispatch:
             wrapped = await session.events(on_unknown=seen.append)
             unknown_frame = bytes([0x99, 0x01, 0x42])
             unknown_frame = unknown_frame + bytes([sum(unknown_frame) & 0xFF])
-            session._on_notify(
-                MagicMock(), bytearray(unknown_frame)
-            )
+            session._on_notify(MagicMock(), bytearray(unknown_frame))
             item = await wrapped.get()
             assert isinstance(item, UnknownFrame)
             assert item.cmd == 0x99
