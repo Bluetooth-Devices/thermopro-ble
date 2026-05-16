@@ -23,7 +23,8 @@ from __future__ import annotations
 import asyncio
 import logging
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Awaitable, Callable
+from typing import TYPE_CHECKING, Callable
+from collections.abc import Awaitable
 from uuid import UUID
 
 from bleak.backends.device import BLEDevice
@@ -484,7 +485,7 @@ class TP902Session:
         await client.disconnect()
 
     def _on_notify(
-        self, _sender: "BleakGATTCharacteristic | object", data: bytearray
+        self, _sender: BleakGATTCharacteristic | object, data: bytearray
     ) -> None:
         parsed = parse_notification(bytes(data))
         if parsed is None:
