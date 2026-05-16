@@ -372,12 +372,12 @@ class TestTP902DeviceWiring:
         device = TP902Device(_make_ble_device(), connector=AsyncMock())
         session = device.session()
         assert isinstance(session, TP902Session)
-        assert session._client is None  # type: ignore[attr-defined]
+        assert session._client is None
 
     def test_device_default_connector(self) -> None:
         # No connector argument → default factory wired
         device = TP902Device(_make_ble_device())
-        assert device._connector is not None  # type: ignore[attr-defined]
+        assert device._connector is not None
 
 
 @pytest.mark.asyncio
@@ -470,7 +470,7 @@ class TestTP902SessionWrites:
     async def test_write_requires_open_session(self) -> None:
         session = TP902Session(_make_ble_device(), connector=AsyncMock())
         with pytest.raises(RuntimeError, match="not started"):
-            await session._write(b"\x00\x00\x00")  # type: ignore[attr-defined]
+            await session._write(b"\x00\x00\x00")
 
     async def test_authenticate_writes_auth_packet(self) -> None:
         session, client = await self._open()
@@ -546,7 +546,7 @@ class TestTP902SessionNotifyDispatch:
             payload = bytes([UNITS_C, SOUND_ON, 80])
             frame = bytes([0x26, 0x03]) + payload
             frame = frame + bytes([sum(frame) & 0xFF])
-            session._on_notify(  # type: ignore[attr-defined]
+            session._on_notify(
                 MagicMock(), bytearray(frame)
             )
             queue = await session.events()
@@ -562,7 +562,7 @@ class TestTP902SessionNotifyDispatch:
             _make_ble_device(), connector=AsyncMock(return_value=client)
         )
         async with session:
-            session._on_notify(  # type: ignore[attr-defined]
+            session._on_notify(
                 MagicMock(), bytearray(b"\x00")
             )
             queue = await session.events()
@@ -578,7 +578,7 @@ class TestTP902SessionNotifyDispatch:
             wrapped = await session.events(on_unknown=seen.append)
             unknown_frame = bytes([0x99, 0x01, 0x42])
             unknown_frame = unknown_frame + bytes([sum(unknown_frame) & 0xFF])
-            session._on_notify(  # type: ignore[attr-defined]
+            session._on_notify(
                 MagicMock(), bytearray(unknown_frame)
             )
             item = await wrapped.get()
@@ -594,5 +594,5 @@ async def test_tp902device_session_uses_injected_connector() -> None:
     connector = AsyncMock(return_value=client)
     device = TP902Device(_make_ble_device(), connector=connector)
     async with device.session() as session:
-        assert session._client is client  # type: ignore[attr-defined]
+        assert session._client is client
     connector.assert_awaited_once()
