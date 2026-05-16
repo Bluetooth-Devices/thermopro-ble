@@ -23,12 +23,15 @@ from __future__ import annotations
 import asyncio
 import logging
 from dataclasses import dataclass
-from typing import Callable
+from typing import TYPE_CHECKING, Awaitable, Callable
 from uuid import UUID
 
-from bleak import BleakClient
 from bleak.backends.device import BLEDevice
-from bleak_retry_connector import establish_connection
+from bleak.exc import BleakCharacteristicNotFoundError, BleakError
+from bleak_retry_connector import BleakClientWithServiceCache, establish_connection
+
+if TYPE_CHECKING:
+    from bleak.backends.characteristic import BleakGATTCharacteristic
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -364,6 +367,18 @@ def supports(model_or_name: str) -> bool:
     return model in {"TP902", "TP920"}
 
 
+Connector = Callable[[BLEDevice], Awaitable[BleakClientWithServiceCache]]
+
+
+async def _default_connector(ble_device: BLEDevice) -> BleakClientWithServiceCache:
+    """Open a service-cached BLE connection via ``bleak_retry_connector``."""
+    return await establish_connection(
+        BleakClientWithServiceCache,
+        ble_device,
+        ble_device.name or ble_device.address,
+    )
+
+
 class TP902Device:
     """Active GATT client for a TP902 / TP920 multi-probe thermometer.
 
@@ -380,87 +395,133 @@ class TP902Device:
     notify characteristic, and decodes each notification through
     :func:`parse_notification`. Closing the session disconnects.
 
+    Inject ``connector`` to override the connection helper in tests; the
+    default mirrors the cached-client pattern used by the sibling
+    ``inkbird-ble`` library.
+
     .. warning::
        This class has been validated against documented packet captures only.
        Behaviour against real hardware may diverge — open an issue if you hit
        a mismatch.
     """
 
-    def __init__(self, ble_device: BLEDevice) -> None:
+    def __init__(
+        self,
+        ble_device: BLEDevice,
+        *,
+        connector: Connector | None = None,
+    ) -> None:
         self.ble_device = ble_device
+        self._connector: Connector = connector or _default_connector
 
     def session(self) -> TP902Session:
         """Return an unstarted session. Use as ``async with``."""
-        return TP902Session(self.ble_device)
+        return TP902Session(self.ble_device, connector=self._connector)
 
 
 class TP902Session:
     """Active TP902 GATT session. Use via ``async with TP902Device.session()``."""
 
-    def __init__(self, ble_device: BLEDevice) -> None:
+    def __init__(
+        self,
+        ble_device: BLEDevice,
+        *,
+        connector: Connector | None = None,
+    ) -> None:
         self._ble_device = ble_device
-        self._client: BleakClient | None = None
+        self._connector: Connector = connector or _default_connector
+        self._client: BleakClientWithServiceCache | None = None
         self._queue: asyncio.Queue[Notification] = asyncio.Queue()
 
-    async def __aenter__(self) -> TP902Session:  # pragma: no cover - GATT path
-        self._client = await establish_connection(
-            BleakClient, self._ble_device, self._ble_device.address
+    async def __aenter__(self) -> TP902Session:
+        # Mirror the inkbird-ble retry-on-stale-cache pattern: if the first
+        # attempt fails because the cached service map is out of date, clear
+        # the cache and try once more.
+        last_err: BaseException | None = None
+        for attempt in range(2):
+            client = await self._connector(self._ble_device)
+            try:
+                await client.start_notify(TP902_NOTIFY_UUID, self._on_notify)
+            except BleakCharacteristicNotFoundError as err:
+                last_err = err
+                try:
+                    await client.clear_cache()
+                except BleakError:
+                    _LOGGER.debug("clear_cache failed during retry", exc_info=True)
+                await client.disconnect()
+                if attempt == 0:
+                    continue
+                raise
+            except BleakError as err:
+                last_err = err
+                await client.disconnect()
+                if attempt == 0:
+                    continue
+                raise
+            else:
+                self._client = client
+                return self
+        # Defensive: the loop above either returns or re-raises; this is
+        # unreachable in practice but keeps the type checker satisfied.
+        raise BleakError(  # pragma: no cover
+            f"TP902 session start failed: {last_err}"
         )
-        await self._client.start_notify(TP902_NOTIFY_UUID, self._on_notify)
-        return self
 
     async def __aexit__(
         self,
         exc_type: type[BaseException] | None,
         exc: BaseException | None,
         tb: object,
-    ) -> None:  # pragma: no cover
+    ) -> None:
         client = self._client
         self._client = None
-        if client is not None:
-            try:
-                await client.stop_notify(TP902_NOTIFY_UUID)
-            except Exception:  # noqa: BLE001
-                _LOGGER.debug("stop_notify failed", exc_info=True)
-            await client.disconnect()
+        if client is None:
+            return
+        try:
+            await client.stop_notify(TP902_NOTIFY_UUID)
+        except BleakError:
+            _LOGGER.debug("stop_notify failed", exc_info=True)
+        await client.disconnect()
 
-    def _on_notify(self, _sender: object, data: bytearray) -> None:
+    def _on_notify(
+        self, _sender: "BleakGATTCharacteristic | object", data: bytearray
+    ) -> None:
         parsed = parse_notification(bytes(data))
         if parsed is None:
             _LOGGER.debug("TP902 dropped malformed frame: %s", bytes(data).hex())
             return
         self._queue.put_nowait(parsed)
 
-    async def _write(self, frame: bytes) -> None:  # pragma: no cover - GATT path
+    async def _write(self, frame: bytes) -> None:
         if self._client is None:
             raise RuntimeError("session not started")
         await self._client.write_gatt_char(TP902_WRITE_UUID, frame, True)
 
-    async def authenticate(self) -> None:  # pragma: no cover - GATT path
+    async def authenticate(self) -> None:
         await self._write(build_auth_packet())
 
-    async def request_status(self) -> None:  # pragma: no cover - GATT path
+    async def request_status(self) -> None:
         await self._write(build_packet(CMD_GET_STATUS))
 
-    async def request_firmware(self) -> None:  # pragma: no cover - GATT path
+    async def request_firmware(self) -> None:
         await self._write(build_packet(CMD_GET_FW))
 
-    async def set_units(self, celsius: bool) -> None:  # pragma: no cover - GATT path
+    async def set_units(self, celsius: bool) -> None:
         await self._write(build_set_units(celsius))
 
-    async def set_sound(self, enabled: bool) -> None:  # pragma: no cover - GATT path
+    async def set_sound(self, enabled: bool) -> None:
         await self._write(build_set_sound(enabled))
 
     async def events(
         self,
         *,
         on_unknown: Callable[[UnknownFrame], None] | None = None,
-    ) -> asyncio.Queue[Notification]:  # pragma: no cover - GATT path
+    ) -> asyncio.Queue[Notification]:
         """Return the queue of decoded notifications.
 
         ``on_unknown`` is invoked synchronously for :class:`UnknownFrame`
-        items as they are dequeued by the caller — provide it as a debug
-        hook when investigating new command codes.
+        items as they are pumped — provide it as a debug hook when
+        investigating new command codes.
         """
         if on_unknown is None:
             return self._queue

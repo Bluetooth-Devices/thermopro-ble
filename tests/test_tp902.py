@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+from typing import Any
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
+from bleak.exc import BleakCharacteristicNotFoundError, BleakError
 
 from thermopro_ble.tp902 import (
     ALARM_OFF,
@@ -17,12 +21,16 @@ from thermopro_ble.tp902 import (
     PROBE_COUNT,
     SOUND_OFF,
     SOUND_ON,
+    TP902_NOTIFY_UUID,
+    TP902_WRITE_UUID,
     UNITS_C,
     UNITS_F,
     AlarmConfig,
     AuthResponse,
     DeviceStatus,
     FirmwareVersion,
+    TP902Device,
+    TP902Session,
     TemperatureBroadcast,
     TemperatureSnapshot,
     UnknownFrame,
@@ -333,3 +341,258 @@ class TestSupports:
     )
     def test_supports(self, name, expected):
         assert supports(name) is expected
+
+
+def _make_ble_device(
+    name: str = "TP902 (1234)", address: str = "AA:BB:CC:DD:EE:FF"
+) -> Any:
+    ble = MagicMock()
+    ble.name = name
+    ble.address = address
+    return ble
+
+
+def _make_client(
+    *,
+    notify_raises: BaseException | None = None,
+    stop_notify_raises: BaseException | None = None,
+) -> MagicMock:
+    """Build a fake BleakClientWithServiceCache with the methods we touch."""
+    client = MagicMock()
+    client.start_notify = AsyncMock(side_effect=notify_raises)
+    client.stop_notify = AsyncMock(side_effect=stop_notify_raises)
+    client.write_gatt_char = AsyncMock()
+    client.disconnect = AsyncMock()
+    client.clear_cache = AsyncMock()
+    return client
+
+
+class TestTP902DeviceWiring:
+    def test_session_is_unstarted(self) -> None:
+        device = TP902Device(_make_ble_device(), connector=AsyncMock())
+        session = device.session()
+        assert isinstance(session, TP902Session)
+        assert session._client is None  # type: ignore[attr-defined]
+
+    def test_device_default_connector(self) -> None:
+        # No connector argument → default factory wired
+        device = TP902Device(_make_ble_device())
+        assert device._connector is not None  # type: ignore[attr-defined]
+
+
+@pytest.mark.asyncio
+class TestTP902SessionLifecycle:
+    async def test_enter_starts_notify_on_correct_uuid(self) -> None:
+        client = _make_client()
+        connector = AsyncMock(return_value=client)
+        session = TP902Session(_make_ble_device(), connector=connector)
+
+        async with session:
+            connector.assert_awaited_once()
+            client.start_notify.assert_awaited_once()
+            uuid_arg = client.start_notify.await_args.args[0]
+            assert uuid_arg == TP902_NOTIFY_UUID
+
+        client.stop_notify.assert_awaited_once()
+        client.disconnect.assert_awaited_once()
+
+    async def test_exit_swallows_bleak_error_from_stop_notify(self) -> None:
+        client = _make_client(stop_notify_raises=BleakError("not connected"))
+        session = TP902Session(
+            _make_ble_device(), connector=AsyncMock(return_value=client)
+        )
+        async with session:
+            pass
+        # disconnect still runs even though stop_notify raised
+        client.disconnect.assert_awaited_once()
+
+    async def test_exit_without_enter_is_noop(self) -> None:
+        session = TP902Session(_make_ble_device(), connector=AsyncMock())
+        await session.__aexit__(None, None, None)  # no client to clean up
+
+    async def test_retries_when_characteristic_not_found(self) -> None:
+        first = _make_client(notify_raises=BleakCharacteristicNotFoundError("notify"))
+        second = _make_client()
+        connector = AsyncMock(side_effect=[first, second])
+        session = TP902Session(_make_ble_device(), connector=connector)
+
+        async with session:
+            assert connector.await_count == 2
+            first.clear_cache.assert_awaited_once()
+            first.disconnect.assert_awaited_once()
+            second.start_notify.assert_awaited_once()
+
+    async def test_retries_on_generic_bleak_error(self) -> None:
+        first = _make_client(notify_raises=BleakError("boom"))
+        second = _make_client()
+        connector = AsyncMock(side_effect=[first, second])
+        session = TP902Session(_make_ble_device(), connector=connector)
+
+        async with session:
+            assert connector.await_count == 2
+            # generic BleakError path should NOT clear cache
+            first.clear_cache.assert_not_called()
+            first.disconnect.assert_awaited_once()
+
+    async def test_second_attempt_failure_propagates(self) -> None:
+        first = _make_client(notify_raises=BleakError("boom"))
+        second = _make_client(notify_raises=BleakError("still bad"))
+        connector = AsyncMock(side_effect=[first, second])
+        session = TP902Session(_make_ble_device(), connector=connector)
+
+        with pytest.raises(BleakError):
+            await session.__aenter__()
+
+        assert connector.await_count == 2
+
+    async def test_clear_cache_failure_does_not_block_retry(self) -> None:
+        first = _make_client(notify_raises=BleakCharacteristicNotFoundError("notify"))
+        first.clear_cache = AsyncMock(side_effect=BleakError("cache fail"))
+        second = _make_client()
+        connector = AsyncMock(side_effect=[first, second])
+        session = TP902Session(_make_ble_device(), connector=connector)
+
+        async with session:
+            # despite clear_cache raising, the second attempt still happens
+            assert connector.await_count == 2
+
+
+@pytest.mark.asyncio
+class TestTP902SessionWrites:
+    async def _open(self) -> tuple[TP902Session, MagicMock]:
+        client = _make_client()
+        session = TP902Session(
+            _make_ble_device(), connector=AsyncMock(return_value=client)
+        )
+        await session.__aenter__()
+        return session, client
+
+    async def test_write_requires_open_session(self) -> None:
+        session = TP902Session(_make_ble_device(), connector=AsyncMock())
+        with pytest.raises(RuntimeError, match="not started"):
+            await session._write(b"\x00\x00\x00")  # type: ignore[attr-defined]
+
+    async def test_authenticate_writes_auth_packet(self) -> None:
+        session, client = await self._open()
+        try:
+            await session.authenticate()
+        finally:
+            await session.__aexit__(None, None, None)
+
+        client.write_gatt_char.assert_awaited_once()
+        uuid_arg, frame_arg, response_arg = client.write_gatt_char.await_args.args
+        assert uuid_arg == TP902_WRITE_UUID
+        assert frame_arg == AUTH_PACKET
+        assert response_arg is True
+
+    async def test_request_status_writes_get_status_frame(self) -> None:
+        session, client = await self._open()
+        try:
+            await session.request_status()
+        finally:
+            await session.__aexit__(None, None, None)
+
+        frame = client.write_gatt_char.await_args.args[1]
+        # CMD_GET_STATUS = 0x26, len = 0, checksum = 0x26
+        assert frame == bytes([0x26, 0x00, 0x26])
+
+    async def test_request_firmware_writes_get_fw_frame(self) -> None:
+        session, client = await self._open()
+        try:
+            await session.request_firmware()
+        finally:
+            await session.__aexit__(None, None, None)
+
+        frame = client.write_gatt_char.await_args.args[1]
+        # CMD_GET_FW = 0x41, len = 0, checksum = 0x41
+        assert frame == bytes([0x41, 0x00, 0x41])
+
+    async def test_set_units_celsius_and_fahrenheit(self) -> None:
+        session, client = await self._open()
+        try:
+            await session.set_units(True)
+            await session.set_units(False)
+        finally:
+            await session.__aexit__(None, None, None)
+
+        frames = [c.args[1] for c in client.write_gatt_char.await_args_list]
+        # CMD_SET_UNITS = 0x20; payload[0] = UNITS_C / UNITS_F
+        assert frames[0] == bytes([0x20, 0x01, UNITS_C, (0x20 + 0x01 + UNITS_C) & 0xFF])
+        assert frames[1] == bytes([0x20, 0x01, UNITS_F, (0x20 + 0x01 + UNITS_F) & 0xFF])
+
+    async def test_set_sound_writes_set_sound_frame(self) -> None:
+        session, client = await self._open()
+        try:
+            await session.set_sound(False)
+        finally:
+            await session.__aexit__(None, None, None)
+
+        frame = client.write_gatt_char.await_args.args[1]
+        # CMD_SET_SOUND = 0x21; payload[0] = SOUND_OFF
+        assert frame == bytes(
+            [CMD_SET_SOUND, 0x01, SOUND_OFF, (CMD_SET_SOUND + 0x01 + SOUND_OFF) & 0xFF]
+        )
+
+
+@pytest.mark.asyncio
+class TestTP902SessionNotifyDispatch:
+    async def test_valid_frame_lands_on_queue(self) -> None:
+        client = _make_client()
+        session = TP902Session(
+            _make_ble_device(), connector=AsyncMock(return_value=client)
+        )
+        async with session:
+            # Status frame: cmd 0x26, len 0x03, units=C, beep on, batt 80
+            payload = bytes([UNITS_C, SOUND_ON, 80])
+            frame = bytes([0x26, 0x03]) + payload
+            frame = frame + bytes([sum(frame) & 0xFF])
+            session._on_notify(  # type: ignore[attr-defined]
+                MagicMock(), bytearray(frame)
+            )
+            queue = await session.events()
+            assert queue.qsize() == 1
+            event = queue.get_nowait()
+            assert isinstance(event, DeviceStatus)
+            assert event.battery == 80
+            assert event.beeper_on is True
+
+    async def test_malformed_frame_is_dropped(self) -> None:
+        client = _make_client()
+        session = TP902Session(
+            _make_ble_device(), connector=AsyncMock(return_value=client)
+        )
+        async with session:
+            session._on_notify(  # type: ignore[attr-defined]
+                MagicMock(), bytearray(b"\x00")
+            )
+            queue = await session.events()
+            assert queue.empty()
+
+    async def test_unknown_frame_hook_invoked(self) -> None:
+        client = _make_client()
+        session = TP902Session(
+            _make_ble_device(), connector=AsyncMock(return_value=client)
+        )
+        seen: list[UnknownFrame] = []
+        async with session:
+            wrapped = await session.events(on_unknown=seen.append)
+            unknown_frame = bytes([0x99, 0x01, 0x42])
+            unknown_frame = unknown_frame + bytes([sum(unknown_frame) & 0xFF])
+            session._on_notify(  # type: ignore[attr-defined]
+                MagicMock(), bytearray(unknown_frame)
+            )
+            item = await wrapped.get()
+            assert isinstance(item, UnknownFrame)
+            assert item.cmd == 0x99
+            assert seen and seen[0].cmd == 0x99
+
+
+@pytest.mark.asyncio
+async def test_tp902device_session_uses_injected_connector() -> None:
+    """End-to-end: TP902Device.session() inherits the device's connector."""
+    client = _make_client()
+    connector = AsyncMock(return_value=client)
+    device = TP902Device(_make_ble_device(), connector=connector)
+    async with device.session() as session:
+        assert session._client is client  # type: ignore[attr-defined]
+    connector.assert_awaited_once()
