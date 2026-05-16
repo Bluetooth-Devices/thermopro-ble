@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
@@ -130,6 +131,10 @@ class TestPacket:
     def test_verify_checksum_rejects_bad_checksum(self):
         assert verify_checksum(b"\x24\x01\x01\x00") is False
 
+    def test_verify_checksum_rejects_length_overflow(self):
+        # Length byte claims 5 data bytes, buffer only has 2.
+        assert verify_checksum(b"\x24\x05\x00\x00") is False
+
     def test_verify_checksum_tolerates_padding(self):
         # Notifications are typically 20 bytes; bytes past the checksum are
         # padding and must not affect verification.
@@ -160,6 +165,15 @@ class TestParseNotification:
         assert isinstance(parsed, TemperatureBroadcast)
         assert parsed.units == "F"
         assert parsed.temperatures[0] == 99.9
+
+    def test_temperature_broadcast_unknown_units(self):
+        # Unrecognised units byte falls back to a hex string so the value is
+        # preserved for later investigation rather than silently mapped to C/F.
+        payload = bytes([0x4C, 0x42, 0x00]) + b"\xff\xff" * 6
+        frame = build_packet(0x30, payload)
+        parsed = parse_notification(frame)
+        assert isinstance(parsed, TemperatureBroadcast)
+        assert parsed.units == "0x42"
 
     def test_device_status(self):
         # 0x26 status: units=C, beeper ON, battery=80
@@ -579,6 +593,22 @@ class TestTP902SessionNotifyDispatch:
             assert isinstance(item, UnknownFrame)
             assert item.cmd == 0x99
             assert seen and seen[0].cmd == 0x99
+
+    async def test_unknown_frame_hook_passes_through_known_frames(self) -> None:
+        # Known frames must still reach the consumer queue when an on_unknown
+        # hook is registered — the hook must not swallow the stream.
+        client = _make_client()
+        session = TP902Session(
+            _make_ble_device(), connector=AsyncMock(return_value=client)
+        )
+        seen: list[UnknownFrame] = []
+        async with session:
+            wrapped = await session.events(on_unknown=seen.append)
+            known = build_packet(0x26, bytes([UNITS_C, SOUND_ON, 80, 0x00, 0x00]))
+            session._on_notify(MagicMock(), bytearray(known))
+            item = await asyncio.wait_for(wrapped.get(), timeout=1.0)
+            assert isinstance(item, DeviceStatus)
+            assert seen == []
 
 
 @pytest.mark.asyncio
