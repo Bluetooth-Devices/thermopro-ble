@@ -8,13 +8,25 @@ from bleak import BleakClient
 from bleak.backends.device import BLEDevice
 from bleak_retry_connector import establish_connection
 
+from .models import CAP_SET_DATETIME, has_capability, models_with_capability
+
 
 class ThermoProDevice:
+    """Helper for GATT operations against ThermoPro thermometers.
+
+    ``DATETIME_SUPPORTED_MODELS`` is a snapshot of ``models.KNOWN_MODELS``
+    taken at class-definition time. The registry is module-level immutable,
+    so this is equivalent to a literal frozenset today, but mutating
+    ``KNOWN_MODELS`` at runtime would not be reflected here.
+    """
+
     datetime_uuid = UUID("00010203-0405-0607-0809-0a0b0c0d2b11")
 
-    # Models known to accept the datetime GATT write. The TP358S is a hardware
-    # revision of the TP358 that shares the same datetime protocol (#126).
-    DATETIME_SUPPORTED_MODELS: frozenset[str] = frozenset({"TP358", "TP358S"})
+    # Models known to accept the datetime GATT write. Sourced from the
+    # central model registry; ``models_with_capability`` keeps this in sync
+    # with ``models.KNOWN_MODELS`` so adding a new datetime-capable model
+    # only requires updating one place. Snapshot semantics: see class docstring.
+    DATETIME_SUPPORTED_MODELS: frozenset[str] = models_with_capability(CAP_SET_DATETIME)
 
     def __init__(self: ThermoProDevice, ble_device: BLEDevice):
         self.ble_device = ble_device
@@ -27,8 +39,7 @@ class ThermoProDevice:
         name ("TP358S (2142)"). Useful for downstream integrations that gate
         the datetime service on known-supported hardware.
         """
-        model = model_or_name.split(" ", 1)[0]
-        return model in cls.DATETIME_SUPPORTED_MODELS
+        return has_capability(model_or_name, CAP_SET_DATETIME)
 
     # ----
     # from https://github.com/koenvervloesem/bluetooth-clocks/
