@@ -33,6 +33,7 @@ bluetooth-sensor-state-data = ">=1.8.0"
 sensor-state-data = {version = ">=2.0.2", python = ">=3.11,<4"}
 bluetooth-data-tools = ">=1.28.0"
 habluetooth = {version = ">=3.42.0", python = ">=3.11,<3.14"}
+bleak-retry-connector = ">=3.5.0"
 
 [tool.poetry.extras]
 docs = [
