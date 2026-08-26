@@ -51,6 +51,7 @@ have decoders with test coverage:
 | ------- | ------------------------------ | --------------------------------------------------- |
 | `TP35x` | TP357, TP357S, TP358, TP358S   | Temperature, humidity, battery                      |
 | `TP39x` | TP393                          | Temperature, humidity, battery                      |
+| `TP59`  | TP59                           | Temperature, humidity, battery                      |
 | `TP96x` | TP960R, TP962R (TempSpike)     | Internal/ambient probe temperature, battery         |
 | `TP97x` | TP970R, TP972S (TempSpike Pro) | Tip/center/end probe temperatures, ambient, battery |
 
