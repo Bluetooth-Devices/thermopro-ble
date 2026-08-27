@@ -9,17 +9,30 @@ MIT License applies.
 
 from __future__ import annotations
 
+import contextlib
 import logging
 from math import tanh
 from struct import Struct
 
-from bluetooth_data_tools import short_address
+from bleak.backends.device import BLEDevice
+from bleak.exc import BleakError
+from bleak_retry_connector import BleakClientWithServiceCache, establish_connection
+from bluetooth_data_tools import monotonic_time_coarse, short_address
 from bluetooth_sensor_state_data import BluetoothData
-from sensor_state_data import SensorLibrary
+from sensor_state_data import SensorLibrary, SensorUpdate
 
 from habluetooth import BluetoothServiceInfoBleak
 
 _LOGGER = logging.getLogger(__name__)
+
+# Minimum interval between forced GATT polls (seconds). If we have not seen a
+# fresh advertisement within this window, ``poll_needed`` will return True.
+MIN_POLL_INTERVAL = 180.0
+
+# Device name prefixes for which we are willing to attempt a GATT wake-up poll.
+# These are the ThermoPro families known to broadcast sensor data passively but
+# occasionally go quiet — connecting briefly nudges them back into advertising.
+POLLABLE_NAME_PREFIXES = ("TP35", "TP39")
 
 
 BATTERY_VALUE_TO_LEVEL = {
@@ -53,6 +66,15 @@ def fahrenheit_to_celsius(fahrenheit_temp: float) -> float:
 
 class ThermoProBluetoothDeviceData(BluetoothData):
     """Date update for ThermoPro Bluetooth devices."""
+
+    def __init__(self) -> None:
+        """Initialize the parser."""
+        super().__init__()
+        # Monotonic timestamp of the last advertisement we successfully parsed.
+        # Used by ``poll_needed`` to decide whether to force a GATT poll.
+        self._last_full_update: float = 0.0
+        # Cached device model string ("TP357", "TP358S", ...) once known.
+        self._device_type: str | None = None
 
     def _update_sensors(
         self,
@@ -131,6 +153,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             return
 
         model = name.split(" ")[0]
+        self._device_type = model
         self.set_device_type(model)
         self.set_title(f"{name} {short_address(service_info.address)}")
         self.set_device_name(name)
@@ -181,6 +204,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
                 ambient_temp,
                 battery_percent,
             )
+            self._last_full_update = service_info.time
             return
 
         if data_length in (7, 13) and name.startswith(("TP96", "TP97")):
@@ -203,6 +227,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             self._update_sensors(
                 probe_one_indexed, internal_temp, ambient_temp, battery_percent
             )
+            self._last_full_update = service_info.time
             return
 
         # TP357S, TP397 and TP393
@@ -225,6 +250,65 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             (temp, humi) = UNPACK_TEMP_HUMID(temp_humi)
             self.update_predefined_sensor(SensorLibrary.TEMPERATURE__CELSIUS, temp / 10)
             self.update_predefined_sensor(SensorLibrary.HUMIDITY__PERCENTAGE, humi)
+            self._last_full_update = service_info.time
             return
 
         _LOGGER.error("Error parsing data from probe: %s", data)
+
+    @property
+    def supports_polling(self) -> bool:
+        """Whether the active device model supports the fallback GATT poll."""
+        return self._device_type is not None and self._device_type.startswith(
+            POLLABLE_NAME_PREFIXES
+        )
+
+    def poll_needed(
+        self,
+        service_info: BluetoothServiceInfoBleak,
+        last_poll: float | None,
+    ) -> bool:
+        """
+        Whether a GATT poll should be performed.
+
+        Returns True for supported models when we have not seen a fresh
+        advertisement within ``MIN_POLL_INTERVAL`` seconds. Mirrors the
+        pattern used by ``inkbird-ble``.
+        """
+        if not self.supports_polling:
+            return False
+        if not self._last_full_update:
+            return True
+        return (monotonic_time_coarse() - self._last_full_update) > MIN_POLL_INTERVAL
+
+    async def async_poll(self, ble_device: BLEDevice) -> SensorUpdate:
+        """
+        Wake a quiet ThermoPro device with a brief GATT connection.
+
+        ThermoPro sensors in the TP35x / TP39x families broadcast their
+        readings passively. Some units occasionally stop advertising for
+        long stretches (see Home Assistant core#136034). Establishing a
+        short-lived GATT connection nudges them back into advertising,
+        after which the advertisement parser resumes producing updates.
+
+        Per-model GATT decoding is intentionally left out for now —
+        adding it requires verified packet captures and can be layered
+        on top of this scaffolding in follow-up work.
+        """
+        _LOGGER.debug("Polling ThermoPro device %s", ble_device.address)
+        try:
+            client = await establish_connection(
+                BleakClientWithServiceCache,
+                ble_device,
+                ble_device.name or ble_device.address,
+            )
+        except (BleakError, TimeoutError) as err:
+            _LOGGER.debug(
+                "Error connecting to ThermoPro device %s: %s",
+                ble_device.address,
+                err,
+            )
+            return self._finish_update()
+
+        with contextlib.suppress(BleakError, TimeoutError):
+            await client.disconnect()
+        return self._finish_update()
