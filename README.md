@@ -44,29 +44,42 @@ This library decodes ThermoPro Bluetooth Low Energy advertisements. It
 does not pair with or connect to devices for sensor data — readings are
 parsed passively from the broadcasts each thermometer emits.
 
-Devices are matched by the advertised name prefix. The following families
-have decoders with test coverage:
+If your device advertises as one of the following names (visible in a BLE
+scanner), it is supported:
 
-| Family  | Verified models                | Sensors                                             |
-| ------- | ------------------------------ | --------------------------------------------------- |
-| `TP35x` | TP357, TP357S, TP358, TP358S   | Temperature, humidity, battery                      |
-| `TP39x` | TP393                          | Temperature, humidity, battery                      |
-| `TP96x` | TP960R, TP962R (TempSpike)     | Internal/ambient probe temperature, battery         |
-| `TP97x` | TP970R, TP972S (TempSpike Pro) | Tip/center/end probe temperatures, ambient, battery |
+| Model  | Family | Type                                        | `set_datetime` |
+| ------ | ------ | ------------------------------------------- | :------------: |
+| TP357  | TP35   | Indoor temperature & humidity sensor        |                |
+| TP357S | TP35   | Indoor temperature & humidity sensor        |                |
+| TP358  | TP35   | Indoor temp & humidity sensor with clock    |       ✓        |
+| TP358S | TP35   | Indoor temp & humidity sensor with clock    |       ✓        |
+| TP393  | TP39   | Indoor temperature & humidity sensor        |                |
+| TP960R | TP96   | TempSpike wireless meat probe (single)      |                |
+| TP962R | TP96   | TempSpike wireless meat probe (dual)        |                |
+| TP970R | TP97   | TempSpike Plus wireless meat probe          |                |
+| TP972S | TP97   | TempSpike Pro wireless meat probe (revised) |                |
 
-A device whose advertised name starts with one of the family prefixes
-above will be decoded by the matching path. Other ThermoPro products
-(including models that communicate exclusively over GATT rather than
-broadcasting their readings, such as the TP902/TP920) are not supported
-by the advertisement parser.
+The authoritative list lives in
+[`src/thermopro_ble/models.py`](src/thermopro_ble/models.py); query it at
+runtime via `is_supported_model(name)`, `get_model(name)`, and
+`has_capability(name, capability)`.
+
+Other ThermoPro products (including models that communicate exclusively
+over GATT rather than broadcasting their readings, such as the TP902/TP920)
+are not supported by the advertisement parser.
 
 ### GATT services
 
 In addition to the passive parser, `ThermoProDevice` exposes a
 `set_datetime()` GATT write for clock synchronization. It is known to
-work on the TP358 and TP358S; other models may accept the same write but
-have not been verified — use `ThermoProDevice.supports_set_datetime()`
-to gate calls from downstream integrations.
+work on the TP358 and TP358S (see the `set_datetime` column above); other
+models may accept the same write but have not been verified — use
+`ThermoProDevice.supports_set_datetime()` to gate calls from downstream
+integrations.
+
+If you own a different ThermoPro model and would like it added, please
+[open an issue](https://github.com/Bluetooth-Devices/thermopro-ble/issues)
+with the advertised name and a packet capture.
 
 ## Contributors ✨
 
