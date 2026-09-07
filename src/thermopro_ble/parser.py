@@ -15,9 +15,8 @@ from struct import Struct
 
 from bluetooth_data_tools import short_address
 from bluetooth_sensor_state_data import BluetoothData
-from sensor_state_data import SensorLibrary
-
 from habluetooth import BluetoothServiceInfoBleak
+from sensor_state_data import SensorLibrary
 
 _LOGGER = logging.getLogger(__name__)
 
