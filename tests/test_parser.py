@@ -3,6 +3,7 @@ from uuid import UUID
 from bleak.backends.device import BLEDevice
 from bluetooth_data_tools import monotonic_time_coarse
 from bluetooth_sensor_state_data import SensorUpdate
+from habluetooth import BluetoothServiceInfoBleak
 from sensor_state_data import (
     DeviceKey,
     SensorDescription,
@@ -11,9 +12,8 @@ from sensor_state_data import (
     SensorValue,
     Units,
 )
-from thermopro_ble.parser import ThermoProBluetoothDeviceData
 
-from habluetooth import BluetoothServiceInfoBleak
+from thermopro_ble.parser import ThermoProBluetoothDeviceData
 
 
 def make_bluetooth_service_info(
