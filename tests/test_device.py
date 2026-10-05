@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import pytest
-
+from datetime import datetime, timezone
 from typing import Any
 from unittest.mock import AsyncMock
-from datetime import datetime, timezone
+
+import pytest
 from bleak import BleakClient
 from bleak.backends.device import BLEDevice
 
