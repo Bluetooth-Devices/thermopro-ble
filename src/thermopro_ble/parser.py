@@ -19,6 +19,8 @@ from sensor_state_data import SensorLibrary
 
 from habluetooth import BluetoothServiceInfoBleak
 
+from .models import KNOWN_FAMILIES
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -127,7 +129,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         """Update from BLE advertisement data."""
         _LOGGER.debug("Parsing thermopro BLE advertisement data: %s", service_info)
         name = service_info.name
-        if not name.startswith(("TP35", "TP39", "TP96", "TP97")):
+        if not name.startswith(KNOWN_FAMILIES):
             return
 
         model = name.split(" ")[0]

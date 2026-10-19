@@ -15,6 +15,13 @@ from sensor_state_data import (
 )
 
 from .device import ThermoProDevice
+from .models import (
+    KNOWN_MODELS,
+    ThermoProModel,
+    get_model,
+    has_capability,
+    is_supported_model,
+)
 from .parser import ThermoProBluetoothDeviceData
 
 __version__ = "1.1.4"
@@ -22,6 +29,11 @@ __version__ = "1.1.4"
 __all__ = [
     "ThermoProDevice",
     "ThermoProBluetoothDeviceData",
+    "ThermoProModel",
+    "KNOWN_MODELS",
+    "get_model",
+    "has_capability",
+    "is_supported_model",
     "BinarySensorDeviceClass",
     "BinarySensorValue",
     "SensorDescription",
