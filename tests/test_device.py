@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from typing import Any
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, call
 from datetime import datetime, timezone
 from bleak import BleakClient
 from bleak.backends.device import BLEDevice
@@ -140,7 +140,6 @@ async def test_device_send_24hour(
     mock_bleak_client.write_gatt_char.assert_awaited_once_with(
         ThermoProDevice.datetime_uuid,
         ThermoProDevice.pack_datetime(dt, False),
-        True,
     )
     mock_bleak_client.disconnect.assert_awaited_once()
 
@@ -154,8 +153,22 @@ async def test_device_send_12hour(
     await dummy_device.set_datetime(dt, True)
 
     mock_bleak_client.write_gatt_char.assert_awaited_once_with(
-        ThermoProDevice.datetime_uuid, ThermoProDevice.pack_datetime(dt, True), True
+        ThermoProDevice.datetime_uuid, ThermoProDevice.pack_datetime(dt, True)
     )
+    mock_bleak_client.disconnect.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_device_send_tp358s(mock_bleak_client: BleakClient) -> None:
+    device = ThermoProDevice(generate_ble_device("aa:bb:cc:dd:ee:ff", "TP358S (2142)"))
+    dt = datetime.now(tz=timezone.utc)
+
+    await device.set_datetime(dt, False)
+
+    assert mock_bleak_client.write_gatt_char.await_args_list == [
+        call(ThermoProDevice.datetime_uuid, ThermoProDevice.pack_datetime(dt, False)),
+        call(ThermoProDevice.datetime_uuid, ThermoProDevice.TP358S_SHOW_CLOCK),
+    ]
     mock_bleak_client.disconnect.assert_awaited_once()
 
 
