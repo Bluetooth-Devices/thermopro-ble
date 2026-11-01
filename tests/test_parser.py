@@ -220,6 +220,29 @@ TP358S = make_bluetooth_service_info(
     source="local",
 )
 
+# TP59 shares the TP35x advertisement format and parser path. These fixtures
+# use real captured advertisements from two physical TP59 units (one with
+# freshly replaced batteries, one drained) to lock in support for the model.
+TP59 = make_bluetooth_service_info(
+    name="TP59 (8C7B)",
+    manufacturer_data={62402: b"\x00\x30\x02\x2c"},
+    service_uuids=[],
+    address="48:7e:48:f1:8c:7b",
+    rssi=-60,
+    service_data={},
+    source="local",
+)
+
+TP59_LOW_BATTERY = make_bluetooth_service_info(
+    name="TP59 (6906)",
+    manufacturer_data={56002: b"\x00\x31\x00\x2c"},
+    service_uuids=[],
+    address="48:7e:48:f1:69:06",
+    rssi=-60,
+    service_data={},
+    source="local",
+)
+
 
 TP393_DETECT_CHANGED_1 = make_bluetooth_service_info(
     name="TP393 (9376)",
@@ -738,6 +761,45 @@ def test_tp358s_model():
     assert (
         update.entity_values[DeviceKey(key="humidity", device_id=None)].native_value
         == 29
+    )
+
+
+def test_tp59_model():
+    """TP59 shares the TP35x frame format and should be parsed as model TP59."""
+    parser = ThermoProBluetoothDeviceData()
+    update = parser.update(TP59)
+    assert update.devices[None].model == "TP59"
+    assert update.devices[None].name == "TP59 (8C7B)"
+    assert (
+        update.entity_values[DeviceKey(key="temperature", device_id=None)].native_value
+        == 24.3
+    )
+    assert (
+        update.entity_values[DeviceKey(key="humidity", device_id=None)].native_value
+        == 48
+    )
+    assert (
+        update.entity_values[DeviceKey(key="battery", device_id=None)].native_value
+        == 100
+    )
+
+
+def test_tp59_low_battery():
+    """A second physical TP59, with drained cells, decodes a low battery level."""
+    parser = ThermoProBluetoothDeviceData()
+    update = parser.update(TP59_LOW_BATTERY)
+    assert update.devices[None].model == "TP59"
+    assert update.devices[None].name == "TP59 (6906)"
+    assert (
+        update.entity_values[DeviceKey(key="temperature", device_id=None)].native_value
+        == 21.8
+    )
+    assert (
+        update.entity_values[DeviceKey(key="humidity", device_id=None)].native_value
+        == 49
+    )
+    assert (
+        update.entity_values[DeviceKey(key="battery", device_id=None)].native_value == 1
     )
 
 
