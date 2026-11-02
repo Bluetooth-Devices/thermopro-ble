@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import pytest
-
+from datetime import UTC, datetime
 from typing import Any
 from unittest.mock import AsyncMock
-from datetime import datetime, timezone
+
+import pytest
 from bleak import BleakClient
 from bleak.backends.device import BLEDevice
 
@@ -39,7 +39,7 @@ def generate_ble_device(
     return BLEDevice(**new)
 
 
-now = datetime.now(tz=timezone.utc)
+now = datetime.now(tz=UTC)
 
 PACK_TESTDATA = [
     ("self-test-24hour", now, False, ThermoProDevice.pack_datetime(now, False)),
@@ -133,7 +133,7 @@ def test_timezone_difference():
 async def test_device_send_24hour(
     mock_bleak_client: BleakClient, dummy_device: ThermoProDevice
 ) -> None:
-    dt = datetime.now(tz=timezone.utc)
+    dt = datetime.now(tz=UTC)
 
     await dummy_device.set_datetime(dt, False)
 
@@ -149,7 +149,7 @@ async def test_device_send_24hour(
 async def test_device_send_12hour(
     mock_bleak_client: BleakClient, dummy_device: ThermoProDevice
 ) -> None:
-    dt = datetime.now(tz=timezone.utc)
+    dt = datetime.now(tz=UTC)
 
     await dummy_device.set_datetime(dt, True)
 
