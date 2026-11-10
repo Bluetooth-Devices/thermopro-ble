@@ -75,6 +75,16 @@ ALARM_RANGE = 0x82
 
 PROBE_COUNT = 6
 _PROBE_EMPTY = b"\xff\xff"
+# Slots that carry no reading. 0xEEEE is sent for ~2 s after a probe is
+# plugged in, before its first value (observed on a TP25). 0xDDDD is treated
+# the same by other TP25 decoders. Without this check the high bit reads as a
+# sign and 0xEEEE decodes as -755.4.
+_NO_READING = frozenset({_PROBE_EMPTY, b"\xee\xee", b"\xdd\xdd"})
+
+# Probes physically present per model. The 0x30 broadcast always carries
+# PROBE_COUNT slots; on a TP25 slots 5-6 are always empty. Models not listed
+# here have not been verified, so all slots are reported for them.
+_MODEL_PROBE_COUNT = {"TP25": 4}
 
 # Fixed auth handshake captured from the official mobile app. The handshake
 # uses a randomized payload in the wild; this deterministic value is what
@@ -97,12 +107,13 @@ def _units_byte_to_str(raw: int) -> str:
 def decode_temp_bcd(raw: bytes) -> float | None:
     """Decode a 2-byte BCD temperature in tenths of a degree.
 
-    Returns ``None`` for the empty-probe sentinel ``0xFFFF``. The high bit of
-    the first byte is used as a sign flag.
+    Returns ``None`` for slots without a reading (``0xFFFF`` empty,
+    ``0xEEEE`` probe just plugged in, ``0xDDDD``). The high bit of the first
+    byte is used as a sign flag.
     """
     if len(raw) != 2:
         raise ValueError(f"expected 2 bytes, got {len(raw)}")
-    if raw == _PROBE_EMPTY:
+    if raw in _NO_READING:
         return None
     neg = bool(raw[0] & 0x80)
     b0 = raw[0] & 0x7F
@@ -165,9 +176,11 @@ def verify_checksum(data: bytes) -> bool:
 class TemperatureBroadcast:
     """Periodic temperature broadcast (RX cmd 0x30).
 
-    ``temperatures`` is a tuple of ``PROBE_COUNT`` floats (in the unit the
-    device is configured to display) or ``None`` when the probe slot is
-    empty.
+    ``temperatures`` is a tuple of ``PROBE_COUNT`` floats in °C, or ``None``
+    when the slot has no reading. They are °C whatever ``units`` says:
+    ``units`` is only the device's own display setting (verified on a TP25
+    set to °F). Use :func:`probe_count` to know how many slots are real
+    probes.
     """
 
     battery: int
@@ -365,7 +378,13 @@ def build_time_sync(epoch_2020_seconds: int) -> bytes:
 def supports(model_or_name: str) -> bool:
     """Return ``True`` if the device model name maps to a TP902-family probe."""
     model = model_or_name.split(" ", 1)[0]
-    return model in {"TP902", "TP920"}
+    return model in {"TP902", "TP920", "TP25"}
+
+
+def probe_count(model_or_name: str) -> int:
+    """Return how many of the broadcast's temperature slots are real probes."""
+    model = model_or_name.split(" ", 1)[0]
+    return _MODEL_PROBE_COUNT.get(model, PROBE_COUNT)
 
 
 Connector = Callable[[BLEDevice], Awaitable[BleakClientWithServiceCache]]

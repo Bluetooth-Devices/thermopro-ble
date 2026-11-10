@@ -45,6 +45,7 @@ from thermopro_ble.tp902 import (
     decode_temp_bcd,
     encode_temp_bcd,
     parse_notification,
+    probe_count,
     supports,
     verify_checksum,
 )
@@ -347,14 +348,76 @@ class TestSupports:
             ("TP920", True),
             ("TP902 (2142)", True),
             ("TP920 (abc)", True),
+            ("TP25", True),
             ("TP357", False),
             ("TP358S", False),
             ("", False),
             ("TP9", False),
+            ("TP2", False),
         ],
     )
     def test_supports(self, name, expected):
         assert supports(name) is expected
+
+    @pytest.mark.parametrize(
+        "name,expected",
+        [("TP25", 4), ("TP902", PROBE_COUNT), ("TP920 (abc)", PROBE_COUNT)],
+    )
+    def test_probe_count(self, name, expected):
+        assert probe_count(name) == expected
+
+
+class TestTP25Captures:
+    """Frames captured from a TP25 (firmware 3.4) after the auth handshake."""
+
+    def test_auth_response(self):
+        parsed = parse_notification(bytes.fromhex("01010a0c"))
+        assert parsed == AuthResponse(data=b"\x0a")
+
+    def test_broadcast_is_celsius_with_display_in_fahrenheit(self):
+        # Display set to F; room temperature still arrives as 23.3 etc.
+        raw = bytes.fromhex("300f5a0f000233ffff02360243ffffffff54")
+        parsed = parse_notification(raw)
+        assert parsed == TemperatureBroadcast(
+            battery=90,
+            units="F",
+            alarms=0,
+            temperatures=(23.3, None, 23.6, 24.3, None, None),
+        )
+
+    def test_probe_plugged_in(self):
+        # Probe 2 plugged in mid-session: empty -> 0xEEEE for ~2 s -> value.
+        frames = [
+            "300f5a0f000233ffff02350241ffffffff51",
+            "300f5a0f000233eeee02350241ffffffff2f",
+            "300f5a0f000232024802350241ffffffff9c",
+        ]
+        probe_2 = []
+        for raw in frames:
+            parsed = parse_notification(bytes.fromhex(raw))
+            assert isinstance(parsed, TemperatureBroadcast)
+            probe_2.append(parsed.temperatures[1])
+        assert probe_2 == [None, None, 24.8]
+
+    def test_unused_slots_beyond_probe_count(self):
+        raw = bytes.fromhex("300f5a0f000232024802350241ffffffff9c")
+        parsed = parse_notification(raw)
+        assert isinstance(parsed, TemperatureBroadcast)
+        count = probe_count("TP25")
+        assert parsed.temperatures[:count] == (23.2, 24.8, 23.5, 24.1)
+        assert parsed.temperatures[count:] == (None, None)
+
+    def test_firmware(self):
+        parsed = parse_notification(bytes.fromhex("4102341188"))
+        assert parsed == FirmwareVersion(major=3, minor=4)
+
+    def test_status(self):
+        parsed = parse_notification(bytes.fromhex("26050f0c5a030fb2"))
+        assert parsed == DeviceStatus(units="F", beeper_on=True, battery=90)
+
+    @pytest.mark.parametrize("raw", [b"\xee\xee", b"\xdd\xdd"])
+    def test_sentinels_have_no_reading(self, raw):
+        assert decode_temp_bcd(raw) is None
 
 
 def _make_ble_device(
