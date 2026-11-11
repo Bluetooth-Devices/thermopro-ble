@@ -9,6 +9,8 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from bleak.exc import BleakCharacteristicNotFoundError, BleakError
 
+from bleak_retry_connector import BleakClientWithServiceCache
+
 from thermopro_ble.tp902 import (
     ALARM_OFF,
     ALARM_RANGE,
@@ -35,6 +37,7 @@ from thermopro_ble.tp902 import (
     TemperatureBroadcast,
     TemperatureSnapshot,
     UnknownFrame,
+    _default_connector,
     build_auth_packet,
     build_get_alarm,
     build_packet,
@@ -522,6 +525,20 @@ class TestTP902SessionLifecycle:
 
         assert connector.await_count == 2
 
+    async def test_characteristic_still_missing_after_retry_propagates(self) -> None:
+        first = _make_client(notify_raises=BleakCharacteristicNotFoundError("x"))
+        second = _make_client(notify_raises=BleakCharacteristicNotFoundError("x"))
+        connector = AsyncMock(side_effect=[first, second])
+        session = TP902Session(_make_ble_device(), connector=connector)
+
+        with pytest.raises(BleakCharacteristicNotFoundError):
+            await session.__aenter__()
+
+        first.clear_cache.assert_awaited_once()
+        second.clear_cache.assert_awaited_once()
+        second.disconnect.assert_awaited_once()
+        assert session._client is None
+
     async def test_clear_cache_failure_does_not_block_retry(self) -> None:
         first = _make_client(notify_raises=BleakCharacteristicNotFoundError("notify"))
         first.clear_cache = AsyncMock(side_effect=BleakError("cache fail"))
@@ -672,6 +689,19 @@ class TestTP902SessionNotifyDispatch:
             item = await asyncio.wait_for(wrapped.get(), timeout=1.0)
             assert isinstance(item, DeviceStatus)
             assert seen == []
+
+
+@pytest.mark.asyncio
+async def test_default_connector_uses_service_cached_client(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    client = _make_client()
+    establish = AsyncMock(return_value=client)
+    monkeypatch.setattr("thermopro_ble.tp902.establish_connection", establish)
+    ble_device = _make_ble_device(name="TP25")
+
+    assert await _default_connector(ble_device) is client
+    establish.assert_awaited_once_with(BleakClientWithServiceCache, ble_device, "TP25")
 
 
 @pytest.mark.asyncio
