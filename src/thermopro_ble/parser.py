@@ -127,7 +127,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         """Update from BLE advertisement data."""
         _LOGGER.debug("Parsing thermopro BLE advertisement data: %s", service_info)
         name = service_info.name
-        if not name.startswith(("TP35", "TP39", "TP59", "TP96", "TP97")):
+        if not name.startswith(("TP34", "TP35", "TP39", "TP59", "TP96", "TP97")):
             return
 
         model = name.split(" ")[0]
@@ -205,7 +205,7 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             )
             return
 
-        # TP357S, TP397, TP393 and TP59 all share the same frame format
+        # TP349, TP357S, TP397, TP393 and TP59 all share the same frame format
         if data_length >= 6 and name.startswith(("TP3", "TP59")):
             # battery value is represented by the lower two bits of byte 4
             # (verified with TP357S on laboratory power supply)
