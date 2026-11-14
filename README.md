@@ -49,6 +49,7 @@ have decoders with test coverage:
 
 | Family  | Verified models                | Sensors                                             |
 | ------- | ------------------------------ | --------------------------------------------------- |
+| `TP34x` | TP349                          | Temperature, humidity, battery                      |
 | `TP35x` | TP357, TP357S, TP358, TP358S   | Temperature, humidity, battery                      |
 | `TP39x` | TP393                          | Temperature, humidity, battery                      |
 | `TP59`  | TP59                           | Temperature, humidity, battery                      |
