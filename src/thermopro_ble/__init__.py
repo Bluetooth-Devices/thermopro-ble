@@ -20,16 +20,15 @@ from .parser import ThermoProBluetoothDeviceData
 __version__ = "1.1.4"
 
 __all__ = [
-    "ThermoProDevice",
-    "ThermoProBluetoothDeviceData",
     "BinarySensorDeviceClass",
     "BinarySensorValue",
-    "SensorDescription",
-    "SensorDeviceInfo",
     "DeviceKey",
-    "SensorUpdate",
+    "SensorDescription",
     "SensorDeviceClass",
     "SensorDeviceInfo",
+    "SensorUpdate",
     "SensorValue",
+    "ThermoProBluetoothDeviceData",
+    "ThermoProDevice",
     "Units",
 ]
