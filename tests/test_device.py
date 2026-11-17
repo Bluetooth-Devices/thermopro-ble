@@ -116,8 +116,8 @@ def test_non_timezone_aware_datetime_pack() -> None:
 def test_pack_cases(name: str, dt: datetime, am_pm: bool, packed: bytes) -> None:
     computed = ThermoProDevice.pack_datetime(dt, am_pm)
     assert computed == packed, (
-        f"test '{name} failed - expected '{packed!r}' different"
-        f"from computed '{computed!r}'",
+        f"test '{name}' failed - expected '{packed!r}' different "
+        f"from computed '{computed!r}'"
     )
 
 
@@ -188,7 +188,7 @@ def test_supports_set_datetime(value: str, expected: bool) -> None:
 
 
 if __name__ == "__main__":
-    for name, dt, am_pm, packed in PACK_TESTDATA:
+    for name, dt, am_pm, _packed in PACK_TESTDATA:
         print(
             f"('{name}', datetime.fromisoformat"
             f"('{dt.replace(microsecond=0).isoformat()}'), {am_pm}, "
