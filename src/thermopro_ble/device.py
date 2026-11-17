@@ -12,6 +12,10 @@ from bleak_retry_connector import establish_connection
 class ThermoProDevice:
     datetime_uuid = UUID("00010203-0405-0607-0809-0a0b0c0d2b11")
 
+    # The TP358S keeps showing "--:--" until this command follows the
+    # datetime write (captured from the ThermoPro Sensor app).
+    TP358S_SHOW_CLOCK = bytes.fromhex("cccc0201000001046666")
+
     # Models known to accept the datetime GATT write. The TP358S is a hardware
     # revision of the TP358 that shares the same datetime protocol (#126).
     DATETIME_SUPPORTED_MODELS: frozenset[str] = frozenset({"TP358", "TP358S"})
@@ -65,10 +69,16 @@ class ThermoProDevice:
         )
 
         try:
+            # The TP358S only supports write without response on this
+            # characteristic, so let bleak pick the supported write type.
             await client.write_gatt_char(
                 ThermoProDevice.datetime_uuid,
                 ThermoProDevice.pack_datetime(dt, am_pm),
-                True,
             )
+            if (self.ble_device.name or "").startswith("TP358S"):
+                await client.write_gatt_char(
+                    ThermoProDevice.datetime_uuid,
+                    ThermoProDevice.TP358S_SHOW_CLOCK,
+                )
         finally:
             await client.disconnect()
