@@ -243,6 +243,18 @@ TP59_LOW_BATTERY = make_bluetooth_service_info(
     source="local",
 )
 
+# TP349 also uses the TP35x frame, followed by the device's own address
+# reversed. It advertises a bare "TP349" with no address suffix. Real capture.
+TP349 = make_bluetooth_service_info(
+    name="TP349",
+    manufacturer_data={63682: b"\x00\x38\x22\x3b\x01\xe1\x25\x4a\x74\xad\xc4"},
+    service_uuids=[],
+    address="c4:ad:74:4a:25:e1",
+    rssi=-60,
+    service_data={},
+    source="local",
+)
+
 
 TP393_DETECT_CHANGED_1 = make_bluetooth_service_info(
     name="TP393 (9376)",
@@ -800,6 +812,27 @@ def test_tp59_low_battery():
     )
     assert (
         update.entity_values[DeviceKey(key="battery", device_id=None)].native_value == 1
+    )
+
+
+def test_tp349():
+    """TP349 shares the TP35x frame format and should be parsed as model TP349."""
+    parser = ThermoProBluetoothDeviceData()
+    update = parser.update(TP349)
+    assert update.title == "TP349 25E1"
+    assert update.devices[None].model == "TP349"
+    assert update.devices[None].name == "TP349"
+    assert (
+        update.entity_values[DeviceKey(key="temperature", device_id=None)].native_value
+        == 24.8
+    )
+    assert (
+        update.entity_values[DeviceKey(key="humidity", device_id=None)].native_value
+        == 56
+    )
+    assert (
+        update.entity_values[DeviceKey(key="battery", device_id=None)].native_value
+        == 100
     )
 
 
