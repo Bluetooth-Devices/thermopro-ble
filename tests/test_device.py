@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import pytest
-
+from datetime import UTC, datetime
 from typing import Any
 from unittest.mock import AsyncMock
-from datetime import datetime, timezone
+
+import pytest
 from bleak import BleakClient
 from bleak.backends.device import BLEDevice
 
@@ -39,7 +39,7 @@ def generate_ble_device(
     return BLEDevice(**new)
 
 
-now = datetime.now(tz=timezone.utc)
+now = datetime.now(tz=UTC)
 
 PACK_TESTDATA = [
     ("self-test-24hour", now, False, ThermoProDevice.pack_datetime(now, False)),
@@ -116,8 +116,8 @@ def test_non_timezone_aware_datetime_pack() -> None:
 def test_pack_cases(name: str, dt: datetime, am_pm: bool, packed: bytes) -> None:
     computed = ThermoProDevice.pack_datetime(dt, am_pm)
     assert computed == packed, (
-        f"test '{name} failed - expected '{packed!r}' different"
-        f"from computed '{computed!r}'",
+        f"test '{name}' failed - expected '{packed!r}' different "
+        f"from computed '{computed!r}'"
     )
 
 
@@ -133,7 +133,7 @@ def test_timezone_difference():
 async def test_device_send_24hour(
     mock_bleak_client: BleakClient, dummy_device: ThermoProDevice
 ) -> None:
-    dt = datetime.now(tz=timezone.utc)
+    dt = datetime.now(tz=UTC)
 
     await dummy_device.set_datetime(dt, False)
 
@@ -149,7 +149,7 @@ async def test_device_send_24hour(
 async def test_device_send_12hour(
     mock_bleak_client: BleakClient, dummy_device: ThermoProDevice
 ) -> None:
-    dt = datetime.now(tz=timezone.utc)
+    dt = datetime.now(tz=UTC)
 
     await dummy_device.set_datetime(dt, True)
 
@@ -188,7 +188,7 @@ def test_supports_set_datetime(value: str, expected: bool) -> None:
 
 
 if __name__ == "__main__":
-    for name, dt, am_pm, packed in PACK_TESTDATA:
+    for name, dt, am_pm, _packed in PACK_TESTDATA:
         print(
             f"('{name}', datetime.fromisoformat"
             f"('{dt.replace(microsecond=0).isoformat()}'), {am_pm}, "
