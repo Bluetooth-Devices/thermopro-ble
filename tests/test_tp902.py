@@ -8,7 +8,6 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from bleak.exc import BleakCharacteristicNotFoundError, BleakError
-
 from bleak_retry_connector import BleakClientWithServiceCache
 
 from thermopro_ble.tp902 import (
@@ -32,10 +31,10 @@ from thermopro_ble.tp902 import (
     AuthResponse,
     DeviceStatus,
     FirmwareVersion,
-    TP902Device,
-    TP902Session,
     TemperatureBroadcast,
     TemperatureSnapshot,
+    TP902Device,
+    TP902Session,
     UnknownFrame,
     _default_connector,
     build_auth_packet,

@@ -22,9 +22,9 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable
-from collections.abc import Awaitable
+from typing import TYPE_CHECKING, Self
 from uuid import UUID
 
 from bleak.backends.device import BLEDevice
@@ -137,7 +137,7 @@ def encode_temp_bcd(value: float | None) -> bytes:
     if not -999.9 <= value <= 999.9:
         raise ValueError(f"temperature out of BCD range: {value}")
     neg = value < 0
-    tenths_total = int(round(abs(value) * 10))
+    tenths_total = round(abs(value) * 10)
     ones_total, tenths = divmod(tenths_total, 10)
     ones = ones_total % 10
     tens = (ones_total // 10) % 10
@@ -453,7 +453,7 @@ class TP902Session:
         self._client: BleakClientWithServiceCache | None = None
         self._queue: asyncio.Queue[Notification] = asyncio.Queue()
 
-    async def __aenter__(self) -> TP902Session:
+    async def __aenter__(self) -> Self:
         # Mirror the inkbird-ble retry-on-stale-cache pattern: if the first
         # attempt fails because the cached service map is out of date, clear
         # the cache and try once more.

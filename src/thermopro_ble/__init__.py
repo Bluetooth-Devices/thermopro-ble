@@ -47,6 +47,6 @@ __all__ = [
     "TemperatureSnapshot",
     "ThermoProBluetoothDeviceData",
     "ThermoProDevice",
-    "UnknownFrame",
     "Units",
+    "UnknownFrame",
 ]
