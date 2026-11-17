@@ -72,9 +72,22 @@ jobs:
       contents: write
 
     steps:
+      # Mint a short-lived installation token for the release-bot GitHub
+      # App, which is in the main ruleset's bypass_actors list so PSR's
+      # version-bump commit/tag push isn't blocked by required checks.
+      # The same token must be passed to actions/checkout so its persisted
+      # http.extraheader doesn't re-attribute the push to github-actions[bot].
+      - name: Generate release App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
 
       # Run semantic release:
       # - Update CHANGELOG.md
@@ -85,7 +98,7 @@ jobs:
         id: release
         uses: python-semantic-release/python-semantic-release@v10.7.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ steps.app-token.outputs.token }}
       - name: Upload package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         if: steps.release.outputs.released == 'true'
@@ -93,5 +106,5 @@ jobs:
         uses: python-semantic-release/publish-action@v10.7.0
         if: steps.release.outputs.released == 'true'
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ steps.app-token.outputs.token }}
           tag: ${{ steps.release.outputs.tag }}
