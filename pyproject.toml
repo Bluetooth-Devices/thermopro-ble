@@ -24,15 +24,15 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.11,<4"
-bleak = {version = ">=0.21.1", python = ">=3.10,<3.14"}
+bleak = ">=0.21.1"
 # Documentation Dependencies
 Sphinx = {version = ">=5,<10", optional = true}
 sphinx-rtd-theme = {version = ">=1,<4", optional = true}
 myst-parser = {version = ">=0.18,<5.3", optional = true}
 bluetooth-sensor-state-data = ">=1.8.0"
-sensor-state-data = {version = ">=2.0.2", python = ">=3.11,<4"}
+sensor-state-data = ">=2.0.2"
 bluetooth-data-tools = ">=1.28.0"
-habluetooth = {version = ">=3.42.0", python = ">=3.11,<3.14"}
+habluetooth = ">=3.42.0"
 
 [tool.poetry.extras]
 docs = [
