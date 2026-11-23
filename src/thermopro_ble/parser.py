@@ -31,6 +31,17 @@ UNPACK_TEMP_HUMID = Struct("<hB").unpack
 UNPACK_SPIKE_TEMP = Struct("<BHHH").unpack
 UNPACK_SPIKE_PRO_TEMP = Struct("<BHHfffHHH").unpack
 
+# Service UUID advertised by the TempSpike (TP96x/TP97x) boosters.
+TEMPSPIKE_SERVICE_UUID = "72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"
+
+# Models whose advertised name does not start with the model number. The
+# TP961 TempSpike advertises "I61" as its complete local name, then the same
+# 7-byte payload as the TP960R. The name alone is too generic to claim, so it
+# only counts alongside the TempSpike service UUID.
+MODEL_BY_TEMPSPIKE_NAME = {
+    "I61": "TP961",
+}
+
 
 # TP96x battery values appear to be a voltage reading, probably in millivolts.
 # This means that calculating battery life from it is a non-linear function.
@@ -126,6 +137,11 @@ class ThermoProBluetoothDeviceData(BluetoothData):
         """Update from BLE advertisement data."""
         _LOGGER.debug("Parsing thermopro BLE advertisement data: %s", service_info)
         name = service_info.name
+        if (
+            name in MODEL_BY_TEMPSPIKE_NAME
+            and TEMPSPIKE_SERVICE_UUID in service_info.service_uuids
+        ):
+            name = MODEL_BY_TEMPSPIKE_NAME[name]
         if not name.startswith(("TP34", "TP35", "TP39", "TP59", "TP96", "TP97")):
             return
 

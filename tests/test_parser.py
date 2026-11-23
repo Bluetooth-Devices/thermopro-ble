@@ -352,6 +352,27 @@ TP962R_2 = make_bluetooth_service_info(
     source="local",
 )
 
+# The TP961 TempSpike advertises "I61" as its complete local name. Captured
+# from a real unit, probe out of the booster at room temperature (24 °C).
+TP961 = make_bluetooth_service_info(
+    name="I61",
+    manufacturer_data={13824: b"\x00\xec\t6\x00"},
+    service_uuids=["72fbb631-6f6b-d1ba-db55-2ee6fdd942bd"],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-68,
+    service_data={},
+    source="local",
+)
+I61_WITHOUT_TEMPSPIKE_UUID = make_bluetooth_service_info(
+    name="I61",
+    manufacturer_data={13824: b"\x00\xec\t6\x00"},
+    service_uuids=[],
+    address="aa:bb:cc:dd:ee:ff",
+    rssi=-68,
+    service_data={},
+    source="local",
+)
+
 TP970R = make_bluetooth_service_info(
     name="TP970R",
     manufacturer_data={13568: b"\x00F\x0b5\x00"},
@@ -970,6 +991,81 @@ def test_tp960r():
         binary_entity_descriptions={},
         binary_entity_values={},
     )
+
+
+def test_tp961():
+    parser = ThermoProBluetoothDeviceData()
+    assert parser.update(TP961) == SensorUpdate(
+        title="TP961 EEFF",
+        devices={
+            None: SensorDeviceInfo(
+                name="TP961",
+                model="TP961",
+                manufacturer="ThermoPro",
+                sw_version=None,
+                hw_version=None,
+            )
+        },
+        entity_descriptions={
+            DeviceKey(
+                key="internal_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(
+                    key="internal_temperature_probe_1", device_id=None
+                ),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(
+                key="ambient_temperature_probe_1", device_id=None
+            ): SensorDescription(
+                device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
+                device_class=SensorDeviceClass.TEMPERATURE,
+                native_unit_of_measurement=Units.TEMP_CELSIUS,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                native_unit_of_measurement=Units.SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+            ),
+            DeviceKey(key="battery_probe_1", device_id=None): SensorDescription(
+                device_key=DeviceKey(key="battery_probe_1", device_id=None),
+                device_class=SensorDeviceClass.BATTERY,
+                native_unit_of_measurement=Units.PERCENTAGE,
+            ),
+        },
+        entity_values={
+            DeviceKey(key="internal_temperature_probe_1", device_id=None): SensorValue(
+                device_key=DeviceKey(
+                    key="internal_temperature_probe_1", device_id=None
+                ),
+                name="Probe 1 Internal Temperature",
+                native_value=24,
+            ),
+            DeviceKey(key="ambient_temperature_probe_1", device_id=None): SensorValue(
+                device_key=DeviceKey(key="ambient_temperature_probe_1", device_id=None),
+                name="Probe 1 Ambient Temperature",
+                native_value=24,
+            ),
+            DeviceKey(key="signal_strength", device_id=None): SensorValue(
+                device_key=DeviceKey(key="signal_strength", device_id=None),
+                name="Signal Strength",
+                native_value=-68,
+            ),
+            DeviceKey(key="battery_probe_1", device_id=None): SensorValue(
+                device_key=DeviceKey(key="battery_probe_1", device_id=None),
+                name="Probe 1 Battery",
+                native_value=76,
+            ),
+        },
+        binary_entity_descriptions={},
+        binary_entity_values={},
+    )
+
+
+def test_i61_without_tempspike_uuid_is_not_supported():
+    parser = ThermoProBluetoothDeviceData()
+    assert parser.supported(I61_WITHOUT_TEMPSPIKE_UUID) is False
 
 
 def test_tp962r():

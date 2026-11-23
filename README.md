@@ -47,17 +47,19 @@ parsed passively from the broadcasts each thermometer emits.
 Devices are matched by the advertised name prefix. The following families
 have decoders with test coverage:
 
-| Family  | Verified models                | Sensors                                             |
-| ------- | ------------------------------ | --------------------------------------------------- |
-| `TP34x` | TP349                          | Temperature, humidity, battery                      |
-| `TP35x` | TP357, TP357S, TP358, TP358S   | Temperature, humidity, battery                      |
-| `TP39x` | TP393                          | Temperature, humidity, battery                      |
-| `TP59`  | TP59                           | Temperature, humidity, battery                      |
-| `TP96x` | TP960R, TP962R (TempSpike)     | Internal/ambient probe temperature, battery         |
-| `TP97x` | TP970R, TP972S (TempSpike Pro) | Tip/center/end probe temperatures, ambient, battery |
+| Family  | Verified models                   | Sensors                                             |
+| ------- | --------------------------------- | --------------------------------------------------- |
+| `TP34x` | TP349                             | Temperature, humidity, battery                      |
+| `TP35x` | TP357, TP357S, TP358, TP358S      | Temperature, humidity, battery                      |
+| `TP39x` | TP393                             | Temperature, humidity, battery                      |
+| `TP59`  | TP59                              | Temperature, humidity, battery                      |
+| `TP96x` | TP960R, TP961, TP962R (TempSpike) | Internal/ambient probe temperature, battery         |
+| `TP97x` | TP970R, TP972S (TempSpike Pro)    | Tip/center/end probe temperatures, ambient, battery |
 
 A device whose advertised name starts with one of the family prefixes
-above will be decoded by the matching path. Other ThermoPro products
+above will be decoded by the matching path. The TP961 is the exception: it
+advertises `I61` as its name, which is accepted only together with the
+TempSpike service UUID `72fbb631-6f6b-d1ba-db55-2ee6fdd942bd`. Other ThermoPro products
 (including models that communicate exclusively over GATT rather than
 broadcasting their readings, such as the TP902/TP920) are not supported
 by the advertisement parser.
