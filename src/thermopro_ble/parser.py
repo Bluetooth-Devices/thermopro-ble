@@ -56,9 +56,9 @@ class ThermoProBluetoothDeviceData(BluetoothData):
     def _update_sensors(
         self,
         probe_one_indexed: int,
-        internal_temp: int,
-        ambient_temp: int,
-        battery_percent: float,
+        internal_temp: int | None,
+        ambient_temp: int | None,
+        battery_percent: float | None,
     ) -> None:
         self.update_predefined_sensor(
             SensorLibrary.TEMPERATURE__CELSIUS,
@@ -196,11 +196,16 @@ class ThermoProBluetoothDeviceData(BluetoothData):
             ) = UNPACK_SPIKE_TEMP(data[:7])
 
             probe_one_indexed = probe_zero_indexed + 1
-            internal_temp = internal_temp - 30
-            ambient_temp = ambient_temp - 30
-            battery_percent = tp96_battery(battery_voltage)
+            # TP970R can advertise 0xFFFF for an absent probe (for example,
+            # while docking). Publish unknown instead of a temperature spike
+            # or retaining the previous reading. Each field is independent.
+            internal_value = None if internal_temp == 0xFFFF else internal_temp - 30
+            ambient_value = None if ambient_temp == 0xFFFF else ambient_temp - 30
+            battery_percent = (
+                None if battery_voltage == 0xFFFF else tp96_battery(battery_voltage)
+            )
             self._update_sensors(
-                probe_one_indexed, internal_temp, ambient_temp, battery_percent
+                probe_one_indexed, internal_value, ambient_value, battery_percent
             )
             return
 
