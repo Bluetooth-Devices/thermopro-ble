@@ -1,5 +1,7 @@
+from struct import pack
 from uuid import UUID
 
+import pytest
 from bleak.backends.device import BLEDevice
 from bluetooth_data_tools import monotonic_time_coarse
 from bluetooth_sensor_state_data import SensorUpdate
@@ -2358,3 +2360,58 @@ def test_tp972s_probe1_23byte_probe2_13byte() -> None:
         DeviceKey(key="internal_center_temperature_probe_2", device_id=None) not in vals
     )
     assert DeviceKey(key="internal_end_temperature_probe_2", device_id=None) not in vals
+
+
+@pytest.mark.parametrize("name", ["TP960R", "TP970R"])
+@pytest.mark.parametrize("probe", [0, 1])
+@pytest.mark.parametrize("trailer", [b"", bytes.fromhex("ffeeddccbbaa")])
+@pytest.mark.parametrize(
+    "internal,ambient,battery",
+    [
+        (0xFFFF, 55, 0xFFFF),  # Captured TP970R absent-probe frame.
+        (54, 0xFFFF, 2640),
+        (0xFFFF, 0xFFFF, 0xFFFF),
+        (54, 55, 0xFFFF),
+    ],
+)
+def test_spike_invalid_fields_and_recovery(
+    name, probe, trailer, internal, ambient, battery
+):
+    """Invalid fields become unknown; valid fields and recovery still update."""
+    parser = ThermoProBluetoothDeviceData()
+
+    def update(internal_temp, ambient_temp, battery_voltage):
+        payload = pack("<BHHH", probe, internal_temp, battery_voltage, ambient_temp)
+        payload += trailer
+        return parser.update(
+            make_bluetooth_service_info(
+                name=name,
+                manufacturer_data={int.from_bytes(payload[:2], "little"): payload[2:]},
+                service_uuids=[],
+                address="aa:bb:cc:dd:ee:ff",
+                rssi=-60,
+                service_data={},
+                source="local",
+                raw=bytes([len(payload) + 1, 0xFF]) + payload,
+            )
+        ).entity_values
+
+    internal_key = DeviceKey(f"internal_temperature_probe_{probe + 1}", None)
+    ambient_key = DeviceKey(f"ambient_temperature_probe_{probe + 1}", None)
+    battery_key = DeviceKey(f"battery_probe_{probe + 1}", None)
+    assert update(54, 55, 2640)[internal_key].native_value == 24
+    values = update(internal, ambient, battery)
+    assert values[internal_key].native_value == (
+        None if internal == 0xFFFF else internal - 30
+    )
+    assert values[ambient_key].native_value == (
+        None if ambient == 0xFFFF else ambient - 30
+    )
+    if battery == 0xFFFF:
+        assert values[battery_key].native_value is None
+    else:
+        assert 0 <= values[battery_key].native_value <= 100
+    values = update(56, 57, 2641)
+    assert values[internal_key].native_value == 26
+    assert values[ambient_key].native_value == 27
+    assert 0 <= values[battery_key].native_value <= 100
