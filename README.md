@@ -62,6 +62,21 @@ above will be decoded by the matching path. Other ThermoPro products
 broadcasting their readings, such as the TP902/TP920) are not supported
 by the advertisement parser.
 
+### Home Assistant Bluetooth scanning
+
+TP970R temperature data can require active Bluetooth scanning to obtain scan
+responses. Ensure a receiver covering the thermometer supports active scanning.
+For Shelly receivers, select **Active** under the device integration's Bluetooth
+scanner mode when passive or Auto scanning receives the device name but leaves
+temperatures stale. Verify changing temperature-bearing manufacturer data and
+Home Assistant readings, not just device discovery or RSSI. Active scanning is
+not a GATT connection and can increase nearby Bluetooth devices' battery use.
+
+In the 7/13-byte TP96/TP97 format, `0xFFFF` temperature or battery fields are
+reported as unknown. This has been observed around a TP970R docking transition;
+it does not uniquely identify a docked probe. Loss of advertisements also cannot
+distinguish docking from an offline or out-of-range device.
+
 ### GATT services
 
 In addition to the passive parser, `ThermoProDevice` exposes a
